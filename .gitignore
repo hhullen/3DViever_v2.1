@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+#hhullen
+*build-3DViewer_v2_1-*
