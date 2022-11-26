@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-#include "../Model_module/model_frame.h"
+#include "../Model_module/model_obj_model.h"
 using std::cout;
 using std::string;
 
@@ -14,7 +14,7 @@ const string kEMPTY_PATH = "models/Empty.obj";
 const string kMILLION_PATH = "models/one_million.obj";
 
 TEST(loader_test, uploading_cube) {
-  S21::ModelFrame m;
+  S21::OBJModel m;
   bool is_load = m.UploadModel(kCUBE_PATH);
   EXPECT_TRUE(is_load);
   EXPECT_EQ(m.get_facets_amount(), 12);
@@ -33,7 +33,7 @@ TEST(loader_test, uploading_cube) {
 }
 
 TEST(loader_test, uploading_million) {
-  S21::ModelFrame m;
+  S21::OBJModel m;
   bool is_load = m.UploadModel(kMILLION_PATH);
   EXPECT_TRUE(is_load);
   EXPECT_EQ(m.get_facets_amount(), 1669317);
@@ -42,7 +42,7 @@ TEST(loader_test, uploading_million) {
 }
 
 TEST(loader_test, uploading_empty) {
-  S21::ModelFrame m;
+  S21::OBJModel m;
   bool is_load = m.UploadModel(kEMPTY_PATH);
   EXPECT_FALSE(is_load);
   EXPECT_EQ(m.get_facets_amount(), 0);
@@ -57,7 +57,7 @@ TEST(loader_test, uploading_empty) {
 }
 
 TEST(loader_test, uploading_wrong_path) {
-  S21::ModelFrame m;
+  S21::OBJModel m;
   bool is_load = m.UploadModel("hello_world.kek");
   EXPECT_FALSE(is_load);
   EXPECT_EQ(m.get_facets_amount(), 0);
@@ -72,7 +72,7 @@ TEST(loader_test, uploading_wrong_path) {
 }
 
 TEST(transfotmation_test, move_x) {
-  S21::ModelFrame m;
+  S21::OBJModel m;
   bool is_load = m.UploadModel(kCUBE_PATH);
   EXPECT_TRUE(is_load);
   EXPECT_EQ(m.get_facets_amount(), 12);
@@ -85,7 +85,7 @@ TEST(transfotmation_test, move_x) {
   EXPECT_TRUE(abs(m.get_min_value(S21::Axis::Y) - (-1)) <= kACCURACUY);
   EXPECT_TRUE(abs(m.get_min_value(S21::Axis::Z) - (-1)) <= kACCURACUY);
 
-  S21::ModelFrame::Move(m, S21::Axis::X, 5.0);
+  S21::OBJModel::Move(m, S21::Axis::X, 5.0);
 
   const vector<double> *vert = m.get_vertexes_vector();
   const vector<unsigned int> *indi = m.get_indices_vector();
@@ -102,7 +102,7 @@ TEST(transfotmation_test, move_x) {
 }
 
 TEST(transfotmation_test, move_y) {
-  S21::ModelFrame m;
+  S21::OBJModel m;
   bool is_load = m.UploadModel(kCUBE_PATH);
   EXPECT_TRUE(is_load);
   EXPECT_EQ(m.get_facets_amount(), 12);
@@ -115,7 +115,7 @@ TEST(transfotmation_test, move_y) {
   EXPECT_TRUE(abs(m.get_min_value(S21::Axis::Y) - (-1)) <= kACCURACUY);
   EXPECT_TRUE(abs(m.get_min_value(S21::Axis::Z) - (-1)) <= kACCURACUY);
 
-  S21::ModelFrame::Move(m, S21::Axis::Y, 5.0);
+  S21::OBJModel::Move(m, S21::Axis::Y, 5.0);
 
   const vector<double> *vert = m.get_vertexes_vector();
   const vector<unsigned int> *indi = m.get_indices_vector();
@@ -132,7 +132,7 @@ TEST(transfotmation_test, move_y) {
 }
 
 TEST(transfotmation_test, move_z) {
-  S21::ModelFrame m;
+  S21::OBJModel m;
   bool is_load = m.UploadModel(kCUBE_PATH);
   EXPECT_TRUE(is_load);
   EXPECT_EQ(m.get_facets_amount(), 12);
@@ -145,7 +145,7 @@ TEST(transfotmation_test, move_z) {
   EXPECT_TRUE(abs(m.get_min_value(S21::Axis::Y) - (-1)) <= kACCURACUY);
   EXPECT_TRUE(abs(m.get_min_value(S21::Axis::Z) - (-1)) <= kACCURACUY);
 
-  S21::ModelFrame::Move(m, S21::Axis::Z, 5.0);
+  S21::OBJModel::Move(m, S21::Axis::Z, 5.0);
 
   const vector<double> *vert = m.get_vertexes_vector();
   const vector<unsigned int> *indi = m.get_indices_vector();
@@ -162,7 +162,7 @@ TEST(transfotmation_test, move_z) {
 }
 
 TEST(transfotmation_test, rotate_x) {
-  S21::ModelFrame m;
+  S21::OBJModel m;
   bool is_load = m.UploadModel(kCUBE_PATH);
   EXPECT_TRUE(is_load);
   EXPECT_EQ(m.get_facets_amount(), 12);
@@ -175,12 +175,12 @@ TEST(transfotmation_test, rotate_x) {
   EXPECT_TRUE(abs(m.get_min_value(S21::Axis::Y) - (-1)) <= kACCURACUY);
   EXPECT_TRUE(abs(m.get_min_value(S21::Axis::Z) - (-1)) <= kACCURACUY);
 
-  S21::ModelFrame::Rotate(m, S21::Axis::X, 180.0);
+  S21::OBJModel::Rotate(m, S21::Axis::X, 180.0);
 
   const vector<double> *vert = m.get_vertexes_vector();
   const vector<unsigned int> *indi = m.get_indices_vector();
 
-  S21::ModelFrame ref;
+  S21::OBJModel ref;
   ref.UploadModel(kCUBE_PATH);
   const vector<double> *vert_ref = ref.get_vertexes_vector();
 
@@ -194,7 +194,7 @@ TEST(transfotmation_test, rotate_x) {
 }
 
 TEST(transfotmation_test, rotate_y) {
-  S21::ModelFrame m;
+  S21::OBJModel m;
   bool is_load = m.UploadModel(kCUBE_PATH);
   EXPECT_TRUE(is_load);
   EXPECT_EQ(m.get_facets_amount(), 12);
@@ -207,12 +207,12 @@ TEST(transfotmation_test, rotate_y) {
   EXPECT_TRUE(abs(m.get_min_value(S21::Axis::Y) - (-1)) <= kACCURACUY);
   EXPECT_TRUE(abs(m.get_min_value(S21::Axis::Z) - (-1)) <= kACCURACUY);
 
-  S21::ModelFrame::Rotate(m, S21::Axis::Y, 180.0);
+  S21::OBJModel::Rotate(m, S21::Axis::Y, 180.0);
 
   const vector<double> *vert = m.get_vertexes_vector();
   const vector<unsigned int> *indi = m.get_indices_vector();
 
-  S21::ModelFrame ref;
+  S21::OBJModel ref;
   ref.UploadModel(kCUBE_PATH);
   const vector<double> *vert_ref = ref.get_vertexes_vector();
 
@@ -226,7 +226,7 @@ TEST(transfotmation_test, rotate_y) {
 }
 
 TEST(transfotmation_test, rotate_z) {
-  S21::ModelFrame m;
+  S21::OBJModel m;
   bool is_load = m.UploadModel(kCUBE_PATH);
   EXPECT_TRUE(is_load);
   EXPECT_EQ(m.get_facets_amount(), 12);
@@ -239,12 +239,12 @@ TEST(transfotmation_test, rotate_z) {
   EXPECT_TRUE(abs(m.get_min_value(S21::Axis::Y) - (-1)) <= kACCURACUY);
   EXPECT_TRUE(abs(m.get_min_value(S21::Axis::Z) - (-1)) <= kACCURACUY);
 
-  S21::ModelFrame::Rotate(m, S21::Axis::Z, 180.0);
+  S21::OBJModel::Rotate(m, S21::Axis::Z, 180.0);
 
   const vector<double> *vert = m.get_vertexes_vector();
   const vector<unsigned int> *indi = m.get_indices_vector();
 
-  S21::ModelFrame ref;
+  S21::OBJModel ref;
   ref.UploadModel(kCUBE_PATH);
   const vector<double> *vert_ref = ref.get_vertexes_vector();
 
@@ -262,7 +262,7 @@ TEST(transfotmation_test, rotate_z) {
 }
 
 TEST(transfotmation_test, scale) {
-  S21::ModelFrame m;
+  S21::OBJModel m;
   bool is_load = m.UploadModel(kCUBE_PATH);
   EXPECT_TRUE(is_load);
   EXPECT_EQ(m.get_facets_amount(), 12);
@@ -275,7 +275,7 @@ TEST(transfotmation_test, scale) {
   EXPECT_TRUE(abs(m.get_min_value(S21::Axis::Y) - (-1)) <= kACCURACUY);
   EXPECT_TRUE(abs(m.get_min_value(S21::Axis::Z) - (-1)) <= kACCURACUY);
 
-  S21::ModelFrame::Scale(m, 0.1);
+  S21::OBJModel::Scale(m, 0.1);
 
   const vector<double> *vert = m.get_vertexes_vector();
   const vector<unsigned int> *indi = m.get_indices_vector();

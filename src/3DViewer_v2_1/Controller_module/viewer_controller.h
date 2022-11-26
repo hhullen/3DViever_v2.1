@@ -1,13 +1,13 @@
 #ifndef SRC_3DVIEVER_V2_CONTROLLER_MODULE_VIEWER_CONTROLLER_H
 #define SRC_3DVIEVER_V2_CONTROLLER_MODULE_VIEWER_CONTROLLER_H
 
-#include "../Model_module/model_frame.h"
+#include "../Model_module/model_obj_model.h"
 
 namespace S21 {
 
 class ViewerController {
  public:
-  ViewerController(ModelFrame *model);
+  ViewerController(OBJModel *model);
   bool UploadNewModel(string file_path);
 
   unsigned int get_vertexes_amount();
@@ -19,7 +19,7 @@ class ViewerController {
   const vector<unsigned int> *get_indices_vector();
 
  private:
-  ModelFrame *model_;
+  OBJModel *model_;
 };
 
 }  // namespace S21

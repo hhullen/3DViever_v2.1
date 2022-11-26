@@ -1,7 +1,7 @@
 #ifndef OGLVIEW_H
 #define OGLVIEW_H
 
-#define GL_SILENCE_DEPRECATION
+//#define GL_SILENCE_DEPRECATION
 
 #include <QLabel>
 #include <QMouseEvent>

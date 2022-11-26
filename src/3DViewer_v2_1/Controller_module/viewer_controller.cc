@@ -2,7 +2,7 @@
 
 namespace S21 {
 
-ViewerController::ViewerController(ModelFrame *model) : model_(model) {}
+ViewerController::ViewerController(OBJModel *model) : model_(model) {}
 
 bool ViewerController::UploadNewModel(string file_path) {
   return model_->UploadModel(file_path);

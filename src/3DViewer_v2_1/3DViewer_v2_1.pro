@@ -10,7 +10,7 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs depr
 
 SOURCES += \
     main.cc \
-    Model_module/model_frame.cc \
+    Model_module/model_obj_model.cc \
     Controller_module/viewer_controller.cc \
     View_module/mainwindow.cc \
     View_module/ptransform.cc \
@@ -26,7 +26,7 @@ SOURCES += \
     gifimage/qgifimage.cpp
 
 HEADERS += \
-    Model_module/model_frame.h \
+    Model_module/model_obj_model.h \
     Controller_module/viewer_controller.h \
     View_module/mainwindow.h \
     View_module/ptransform.h \

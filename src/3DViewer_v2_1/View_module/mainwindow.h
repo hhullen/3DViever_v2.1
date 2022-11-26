@@ -9,13 +9,13 @@
 #include <QThread>
 
 #include "Controller_module/viewer_controller.h"
-#include "Model_module/model_frame.h"
+#include "Model_module/model_obj_model.h"
 #include "View_module/oglview.h"
 #include "gifimage/qgifimage.h"
 #include "ptransform.h"
 #include "screencap.h"
 #include "viewsetup.h"
-using S21::ModelFrame;
+using S21::OBJModel;
 using S21::ViewerController;
 
 QT_BEGIN_NAMESPACE
