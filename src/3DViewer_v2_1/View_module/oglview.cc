@@ -14,6 +14,7 @@ OGLview::OGLview(QWidget *parent)
   timer_ = new QTimer(this);
   connect(timer_, SIGNAL(timeout()), this, SLOT(ClearMessageSlot()));
   update();
+  gl_func_ = QOpenGLContext::currentContext()->functions();
 }
 
 OGLview::~OGLview() { delete ui_; }

@@ -1,11 +1,12 @@
 #ifndef OGLVIEW_H
 #define OGLVIEW_H
 
-//#define GL_SILENCE_DEPRECATION
+#define GL_SILENCE_DEPRECATION
 
 #include <QLabel>
 #include <QMouseEvent>
 #include <QOpenGLFunctions>
+#include <QOpenGLFunctions_4_1_Compatibility>
 #include <QOpenGLWidget>
 #include <QTimer>
 #include <vector>
@@ -13,13 +14,15 @@
 #include "View_module/enum_parameters.h"
 using std::vector;
 
+QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
+
 namespace Ui {
 class OGLview;
 }
 
 namespace S21 {
 
-class OGLview : public QOpenGLWidget, public QOpenGLFunctions {
+class OGLview : public QOpenGLWidget, public QOpenGLFunctions_4_1_Compatibility {
   Q_OBJECT
 
  public:
@@ -62,6 +65,7 @@ class OGLview : public QOpenGLWidget, public QOpenGLFunctions {
 
  private:
   Ui::OGLview *ui_;
+  QOpenGLFunctions *gl_func_;
   QTimer *timer_;
   QCursor new_cursor_;
   QPoint mouse_now_;
