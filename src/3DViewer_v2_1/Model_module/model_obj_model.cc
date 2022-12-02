@@ -27,11 +27,17 @@ bool OBJModel::UploadModel(const string &file_path) {
 
   RemoveModel();
   file_path_ = file_path;
-  v_thread = new thread(&OBJModel::UploadVertexes, this, v_);
-  f_thread = new thread(&OBJModel::UploadFacets, this, indices_, f_amount_);
+  f_thread = new thread(&OBJModel::UploadFacets, this, facets_);
+  v_thread = new thread(&OBJModel::UploadCoords, this, v_, "v %f %f %f", 3);
+  vt_thread = new thread(&OBJModel::UploadCoords, this, vt_, "vt %f %f", 2);
+  vn_thread = new thread(&OBJModel::UploadCoords, this, vn_, "vn %f %f %f", 3);
   v_thread->join();
+  vt_thread->join();
+  vn_thread->join();
   f_thread->join();
   delete v_thread;
+  delete vt_thread;
+  delete vn_thread;
   delete f_thread;
 
   if (IsCorrectModel()) {
@@ -47,31 +53,27 @@ bool OBJModel::UploadModel(const string &file_path) {
   return returnable;
 }
 
-void OBJModel::UploadVertexes(vector<float> &data) {
+void OBJModel::UploadCoords(vector<float> &data, char *format,
+                            unsigned int dimension) {
+  float coord[kMaxDimension];
   ifstream file;
   string line;
 
   file.open(file_path_);
-  if (file.is_open()) {
+  if (file.is_open() && format) {
     while (!getline(file, line, '\n').eof()) {
-      ReadVertex(data, line);
+      if (line.size() > 2 && line[0] == format[0] && line[1] == format[1]) {
+        sscanf(line.data(), format, &coord[0], &coord[1], &coord[2]);
+        for (unsigned int i = 0; i < dimension; ++i) {
+          data.push_back(coord[i]);
+        }
+      }
     }
     file.close();
   }
 }
 
-void OBJModel::ReadVertex(vector<float> &data, string &line) {
-  float x, y, z;
-
-  if (line.size() > 2 && line[0] == 'v' && line[1] == ' ') {
-    sscanf(line.data(), "v %lf %lf %lf", &x, &y, &z);
-    data.push_back(x);
-    data.push_back(y);
-    data.push_back(z);
-  }
-}
-
-void OBJModel::UploadFacets(vector<unsigned int> &data, unsigned int &amount) {
+void OBJModel::UploadFacets(Facets &data) {
   unsigned int first_index = 0;
   ifstream file;
   string line;
@@ -81,7 +83,7 @@ void OBJModel::UploadFacets(vector<unsigned int> &data, unsigned int &amount) {
     while (!getline(file, line, '\n').eof()) {
       if (line.size() > 2 && line[0] == 'f' && line[1] == ' ') {
         ReadFacet(data, line);
-        ++amount;
+        ++data.f_amount;
       }
     }
     file.close();

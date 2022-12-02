@@ -17,6 +17,7 @@ using std::vector;
 
 namespace S21 {
 
+const unsigned int kMaxDimension = 3;
 enum Axis { X, Y, Z };
 
 class OBJModel {
@@ -87,9 +88,8 @@ class OBJModel {
 
   string file_path_;
 
-  void UploadVertexes(vector<float> &data);
-  void ReadVertex(vector<float> &data, string &line);
-  void UploadFacets(vector<unsigned int> &data, unsigned int &amount);
+  void UploadCoords(vector<float> &data, char *format, unsigned int dimension);
+  void UploadFacets(Facets &data);
   void ReadFacet(vector<unsigned int> &data, string &line);
   bool IsAsciiDigit(const char &sym);
   void SetDefaultValues();
