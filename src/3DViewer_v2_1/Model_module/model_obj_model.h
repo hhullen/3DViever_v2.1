@@ -19,6 +19,7 @@ namespace S21 {
 
 const unsigned int kMaxDimension = 3;
 enum Axis { X, Y, Z };
+enum ModelState { Vert, VertTex, VertNorm, VertTexNorm };
 
 class OBJModel {
  public:
@@ -84,13 +85,16 @@ class OBJModel {
     vector<unsigned int> v_indices;
     vector<unsigned int> vt_indices;
     vector<unsigned int> vn_indices;
+    vector<unsigned int> edge_indices;
   } facets_;
 
   string file_path_;
 
   void UploadCoords(vector<float> &data, char *format, unsigned int dimension);
+  void CatchThreads(thread *v, thread *vt, thread *vn, thread *f);
   void UploadFacets(Facets &data);
-  void ReadFacet(vector<unsigned int> &data, string &line);
+  void ReadFacet(Facets &data, string &line);
+  void MakeEdgeIndices(Facets &data, string &line);
   bool IsAsciiDigit(const char &sym);
   void SetDefaultValues();
   bool IsCorrectModel();
