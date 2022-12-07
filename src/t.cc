@@ -1,12 +1,11 @@
 #include <iostream>
+#include <vector>
 
 int main() {
-  std::string str = "f 2";
-  std::string f = "f %d/%d/%d";
-  int a = 0, b = 0, c = 0;
+  // std::vector<int> t0({1, 2, 3});
+  // std::vector<int> t1({4, 5, 6});
 
-  std::cout << sscanf(str.data(), f.data(), &a, &b, &c) << "\n";
-  std::cout << a << " a\n";
-  std::cout << b << " b\n";
-  std::cout << c << " c\n";
+  // for (int i = 0; i < t0.size(); ++i) {
+  //   std::cout << t0[i] << "\n";
+  // }
 }

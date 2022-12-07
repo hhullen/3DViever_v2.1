@@ -1,8 +1,11 @@
 #include "model_obj_model.h"
 
-namespace S21 {
+namespace s21 {
 
-OBJModel::OBJModel() { SetDefaultValues(); }
+OBJModel::OBJModel() {
+  SetDefaultValues();
+  state_ = ModelState::Empty;
+}
 
 OBJModel::~OBJModel() { RemoveModel(); }
 
@@ -84,6 +87,7 @@ void OBJModel::UploadFacets(Facets &data) {
   if (file.is_open()) {
     while (!getline(file, line, '\n').eof()) {
       if (line.size() > 2 && line[0] == 'f' && line[1] == ' ') {
+        CheckState(line);
         ReadFacet(data, line);
         ++data.f_amount;
       }
@@ -92,20 +96,58 @@ void OBJModel::UploadFacets(Facets &data) {
   }
 }
 
+void OBJModel::CheckState(string &line) {
+  if (state_ == ModelState::Empty) {
+    int values[3] = {0};
+    sscanf(line.data(), "f %d ", &values[0]);
+    sscanf(line.data(), "f %d/%d ", &values[0], &values[1]);
+    sscanf(line.data(), "f %d//%d ", &values[0], &values[2]);
+    sscanf(line.data(), "f %d/%d/%d ", &values[0], &values[1], &values[2]);
+    if (values[0] > 0 && values[1] == 0 && values[2] == 0) {
+      state_ = ModelState::Vert;
+      facets_.format = "%d";
+    } else if (values[0] > 0 && values[1] > 0 && values[2] == 0) {
+      state_ = ModelState::VertTex;
+      facets_.format = "%d/%d";
+    } else if (values[0] > 0 && values[1] == 0 && values[2] > 0) {
+      state_ = ModelState::VertNorm;
+      facets_.format = "%d//%d";
+    } else if (values[0] > 0 && values[1] > 0 && values[2] > 0) {
+      state_ = ModelState::VertTexNorm;
+      facets_.format = "%d/%d/%d";
+    }
+  }
+}
+
 void OBJModel::ReadFacet(Facets &data, string &line) {
   size_t line_zise = line.size();
   size_t slash_counter = 0;
+  int indexes[3] = {0};
 
   for (size_t i = 2; i < line_zise; ++i) {
     if (line[i - 1] == ' ' && IsAsciiDigit(line[i])) {
-    } else if (line[i - 1] == '/' && IsAsciiDigit(line[i])) {
-      ++slash_counter;
-    } else if (line[i - 1] == '/') {
-      ++slash_counter;
+      sscanf(line[i], facets_.format, &indexes[0], &indexes[1], &indexes[2]);
+      PushIndexes(&indexes);
     }
   }
 
-  MakeEdgeIndices(data, line);
+  // MakeEdgeIndices(data, line);
+}
+
+void OBJModel::PushIndexes(int *indexes) {
+  if (state_ == ModelState::Vert) {
+    facets_.v_indices.push_back(indexes[0] - 1);
+  } else if (state_ == ModelState::VertTex) {
+    facets_.v_indices.push_back(indexes[0] - 1);
+    facets_.vt_indices.push_back(indexes[1] - 1);
+  } else if (state_ == ModelState::VertNorm) {
+    facets_.v_indices.push_back(indexes[0] - 1);
+    facets_.vn_indices.push_back(indexes[1] - 1);
+  } else if (state_ == ModelState::VertTexNorm) {
+    facets_.v_indices.push_back(indexes[0] - 1);
+    facets_.vt_indices.push_back(indexes[1] - 1);
+    facets_.vn_indices.push_back(indexes[2] - 1);
+  }
 }
 
 void OBJModel::MakeEdgeIndices(Facets &data, string &line) {
@@ -147,4 +189,4 @@ bool OBJModel::IsCorrectModel() {
          v.size() % 3 == 0;
 }
 
-}  // namespace S21
+}  // namespace s21

@@ -15,11 +15,11 @@ using std::string;
 using std::thread;
 using std::vector;
 
-namespace S21 {
+namespace s21 {
 
 const unsigned int kMaxDimension = 3;
 enum Axis { X, Y, Z };
-enum ModelState { Vert, VertTex, VertNorm, VertTexNorm };
+enum ModelState { Vert, VertTex, VertNorm, VertTexNorm, Empty };
 
 class OBJModel {
  public:
@@ -86,20 +86,24 @@ class OBJModel {
     vector<unsigned int> vt_indices;
     vector<unsigned int> vn_indices;
     vector<unsigned int> edge_indices;
+    const char *format;
   } facets_;
 
   string file_path_;
+  ModelState state_;
 
   void UploadCoords(vector<float> &data, char *format, unsigned int dimension);
   void CatchThreads(thread *v, thread *vt, thread *vn, thread *f);
   void UploadFacets(Facets &data);
+  void CheckState(string &line);
   void ReadFacet(Facets &data, string &line);
+  void PushIndexes(int *indexes);
   void MakeEdgeIndices(Facets &data, string &line);
   bool IsAsciiDigit(const char &sym);
   void SetDefaultValues();
   bool IsCorrectModel();
 };
 
-}  // namespace S21
+}  // namespace s21
 
 #endif  // SRC_3DVIEVER_V2_MODEL_MODULE_MODEL_FRAME_LOADER_H
