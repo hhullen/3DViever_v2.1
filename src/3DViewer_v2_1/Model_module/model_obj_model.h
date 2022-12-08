@@ -3,12 +3,14 @@
 
 #include <cmath>
 #include <fstream>
+#include <iostream>  // !!!
 #include <string>
 #include <thread>
 #include <vector>
 
 using std::getline;
 using std::ifstream;
+using std::ref;
 using std::sscanf;
 using std::stod;
 using std::string;
@@ -38,7 +40,7 @@ class OBJModel {
     unsigned int vertexes_values = model.get_vertexes_amount() * 3;
 
     for (unsigned int i = axis; i < vertexes_values; i += 3) {
-      model.v.at(i) += offset;
+      model.v_.at(i) += offset;
     }
   }
 
@@ -59,11 +61,12 @@ class OBJModel {
     }
 
     for (unsigned int i = 0; i < vertexes_values; i += 3) {
-      float temp_1 = model.v.at(i + changeable_1);
-      float temp_2 = model.v.at(i + changeable_2);
+      float temp_1 = model.v_.at(i + changeable_1);
+      float temp_2 = model.v_.at(i + changeable_2);
 
-      model.v.at(i + changeable_1) = temp_1 * cos(angle) + temp_2 * sin(angle);
-      model.v.at(i + changeable_2) = temp_1 * -sin(angle) + temp_2 * cos(angle);
+      model.v_.at(i + changeable_1) = temp_1 * cos(angle) + temp_2 * sin(angle);
+      model.v_.at(i + changeable_2) =
+          temp_1 * -sin(angle) + temp_2 * cos(angle);
     }
   }
 
@@ -71,7 +74,7 @@ class OBJModel {
     unsigned int vertexes_values = model.get_vertexes_amount() * 3;
 
     for (unsigned int i = 0; i < vertexes_values; i += 1) {
-      model.v.at(i) *= coeff;
+      model.v_.at(i) *= coeff;
     }
   }
 
@@ -86,22 +89,24 @@ class OBJModel {
     vector<unsigned int> vt_indices;
     vector<unsigned int> vn_indices;
     vector<unsigned int> edge_indices;
+    vector<unsigned int> facet_indices;
     const char *format;
   } facets_;
 
   string file_path_;
   ModelState state_;
 
-  void UploadCoords(vector<float> &data, char *format, unsigned int dimension);
+  void UploadCoords(vector<float> &data, const char *format,
+                    unsigned int dimension);
   void CatchThreads(thread *v, thread *vt, thread *vn, thread *f);
-  void UploadFacets(Facets &data);
+  void UploadFacets();
   void CheckState(string &line);
-  void ReadFacet(Facets &data, string &line);
+  void ReadFacet(string &line);
   void PushIndexes(int *indexes);
-  void MakeEdgeIndices(Facets &data, string &line);
   bool IsAsciiDigit(const char &sym);
   void SetDefaultValues();
   bool IsCorrectModel();
+  void MakeIndicesSubsequences();
 };
 
 }  // namespace s21

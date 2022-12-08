@@ -15,11 +15,13 @@ unsigned int OBJModel::get_vertexes_amount() { return v_.size() / 3; }
 
 unsigned int OBJModel::get_facets_amount() { return facets_.f_amount; }
 
-unsigned int OBJModel::get_indices_amount() { return indices_.size(); }
+unsigned int OBJModel::get_indices_amount() { return facets_.v_indices.size(); }
 
 const vector<float> *OBJModel::get_vertexes_vector() { return &v_; }
 
-const vector<unsigned int> *OBJModel::get_indices_vector() { return &indices_; }
+const vector<unsigned int> *OBJModel::get_indices_vector() {
+  return &facets_.v_indices;
+}
 
 bool OBJModel::UploadModel(const string &file_path) {
   thread *v_thread = nullptr, *vt_thread = nullptr, *vn_thread = nullptr,
@@ -28,18 +30,26 @@ bool OBJModel::UploadModel(const string &file_path) {
 
   RemoveModel();
   file_path_ = file_path;
-  f_thread = new thread(&OBJModel::UploadFacets, this, facets_);
-  v_thread = new thread(&OBJModel::UploadCoords, this, v_, "v %f %f %f", 3);
-  vt_thread = new thread(&OBJModel::UploadCoords, this, vt_, "vt %f %f", 2);
-  vn_thread = new thread(&OBJModel::UploadCoords, this, vn_, "vn %f %f %f", 3);
+  f_thread = new thread(&OBJModel::UploadFacets, this);
+  v_thread =
+      new thread(&OBJModel::UploadCoords, this, ref(v_), "v %f %f %f", 3);
+  vt_thread =
+      new thread(&OBJModel::UploadCoords, this, ref(vt_), "vt %f %f", 2);
+  vn_thread =
+      new thread(&OBJModel::UploadCoords, this, ref(vn_), "vn %f %f %f", 3);
   CatchThreads(v_thread, vt_thread, vn_thread, f_thread);
+  MakeIndicesSubsequences();
 
   if (IsCorrectModel()) {
-    returnable = true;
-    v_.shrink_to_fit();
-    vt_.shrink_to_fit();
+    facets_.facet_indices.shrink_to_fit();
+    facets_.edge_indices.shrink_to_fit();
+    facets_.vt_indices.shrink_to_fit();
+    facets_.vn_indices.shrink_to_fit();
+    facets_.v_indices.shrink_to_fit();
     vn_.shrink_to_fit();
-    indices_.shrink_to_fit();
+    vt_.shrink_to_fit();
+    v_.shrink_to_fit();
+    returnable = true;
   } else {
     RemoveModel();
   }
@@ -58,7 +68,7 @@ void OBJModel::CatchThreads(thread *v, thread *vt, thread *vn, thread *f) {
   delete f;
 }
 
-void OBJModel::UploadCoords(vector<float> &data, char *format,
+void OBJModel::UploadCoords(vector<float> &data, const char *format,
                             unsigned int dimension) {
   float coord[kMaxDimension];
   ifstream file;
@@ -69,6 +79,7 @@ void OBJModel::UploadCoords(vector<float> &data, char *format,
     while (!getline(file, line, '\n').eof()) {
       if (line.size() > 2 && line[0] == format[0] && line[1] == format[1]) {
         sscanf(line.data(), format, &coord[0], &coord[1], &coord[2]);
+
         for (unsigned int i = 0; i < dimension; ++i) {
           data.push_back(coord[i]);
         }
@@ -78,8 +89,7 @@ void OBJModel::UploadCoords(vector<float> &data, char *format,
   }
 }
 
-void OBJModel::UploadFacets(Facets &data) {
-  unsigned int first_index = 0;
+void OBJModel::UploadFacets() {
   ifstream file;
   string line;
 
@@ -88,8 +98,8 @@ void OBJModel::UploadFacets(Facets &data) {
     while (!getline(file, line, '\n').eof()) {
       if (line.size() > 2 && line[0] == 'f' && line[1] == ' ') {
         CheckState(line);
-        ReadFacet(data, line);
-        ++data.f_amount;
+        ReadFacet(line);
+        ++facets_.f_amount;
       }
     }
     file.close();
@@ -119,19 +129,17 @@ void OBJModel::CheckState(string &line) {
   }
 }
 
-void OBJModel::ReadFacet(Facets &data, string &line) {
+void OBJModel::ReadFacet(string &line) {
   size_t line_zise = line.size();
-  size_t slash_counter = 0;
   int indexes[3] = {0};
 
   for (size_t i = 2; i < line_zise; ++i) {
     if (line[i - 1] == ' ' && IsAsciiDigit(line[i])) {
-      sscanf(line[i], facets_.format, &indexes[0], &indexes[1], &indexes[2]);
-      PushIndexes(&indexes);
+      sscanf(&line.data()[i], facets_.format, &indexes[0], &indexes[1],
+             &indexes[2]);
+      PushIndexes(indexes);
     }
   }
-
-  // MakeEdgeIndices(data, line);
 }
 
 void OBJModel::PushIndexes(int *indexes) {
@@ -150,24 +158,6 @@ void OBJModel::PushIndexes(int *indexes) {
   }
 }
 
-void OBJModel::MakeEdgeIndices(Facets &data, string &line) {
-  size_t line_zise = line.size();
-  unsigned int first_index = 0;
-  bool is_first_index = true;
-
-  for (size_t i = 2; i < line_zise; ++i) {
-    if (!is_first_index && line[i - 1] == ' ' && IsAsciiDigit(line[i])) {
-      data.edge_indices.push_back(stod(&line.data()[i]) - 1);
-      data.edge_indices.push_back(data.edge_indices.back());
-    } else if (is_first_index && line[i - 1] == ' ' && IsAsciiDigit(line[i])) {
-      first_index = stod(&line.data()[i]) - 1;
-      data.edge_indices.push_back(first_index);
-      is_first_index = false;
-    }
-  }
-  data.edge_indices.push_back(first_index);
-}
-
 bool OBJModel::IsAsciiDigit(const char &sym) {
   return sym >= '0' && sym <= '9';
 }
@@ -180,13 +170,23 @@ void OBJModel::SetDefaultValues() {
   vn_.clear();
   vn_.shrink_to_fit();
   facets_.f_amount = 0;
-  indices_.clear();
-  indices_.shrink_to_fit();
+  facets_.v_indices.clear();
+  facets_.v_indices.shrink_to_fit();
+  facets_.vt_indices.clear();
+  facets_.vt_indices.shrink_to_fit();
+  facets_.vn_indices.clear();
+  facets_.vn_indices.shrink_to_fit();
+  facets_.edge_indices.clear();
+  facets_.edge_indices.shrink_to_fit();
+  facets_.facet_indices.clear();
+  facets_.facet_indices.shrink_to_fit();
 }
 
 bool OBJModel::IsCorrectModel() {
-  return v.size() > 2 && facets_.f_n > 0 && indices_.size() > 1 &&
-         v.size() % 3 == 0;
+  return v_.size() / 3 == vt_.size() / 2 && v_.size() / 3 == vn_.size() / 3 &&
+         facets_.f_amount > 1;
 }
+
+void OBJModel::MakeIndicesSubsequences() {}
 
 }  // namespace s21
