@@ -3,7 +3,6 @@
 
 #include <cmath>
 #include <fstream>
-#include <iostream>  // !!!
 #include <string>
 #include <thread>
 #include <vector>
@@ -21,7 +20,8 @@ namespace s21 {
 
 const unsigned int kMaxDimension = 3;
 enum Axis { X, Y, Z };
-enum ModelState { Vert, VertTex, VertNorm, VertTexNorm, Empty };
+enum class ModelState { Vert, VertTex, VertNorm, VertTexNorm, Empty };
+enum class FacetType { Triangle, Polygon };
 
 class OBJModel {
  public:
@@ -33,8 +33,9 @@ class OBJModel {
   unsigned int get_vertexes_amount();
   unsigned int get_facets_amount();
   unsigned int get_indices_amount();
-  const vector<float> *get_vertexes_vector();
-  const vector<unsigned int> *get_indices_vector();
+  const vector<float> *get_vertexes();
+  const vector<float> *get_ordered_data();
+  const vector<unsigned int> *get_indices();
 
   static void Move(OBJModel &model, Axis axis, float offset) {
     unsigned int vertexes_values = model.get_vertexes_amount() * 3;
@@ -82,14 +83,13 @@ class OBJModel {
   vector<float> v_;
   vector<float> vt_;
   vector<float> vn_;
+  vector<float> subsequence_;
 
   struct Facets {
     unsigned int f_amount;
     vector<unsigned int> v_indices;
     vector<unsigned int> vt_indices;
     vector<unsigned int> vn_indices;
-    vector<unsigned int> edge_indices;
-    vector<unsigned int> facet_indices;
     const char *format;
   } facets_;
 
@@ -102,11 +102,17 @@ class OBJModel {
   void UploadFacets();
   void CheckState(string &line);
   void ReadFacet(string &line);
-  void PushIndexes(int *indexes);
+  void PushIndexes(int *indexes, FacetType type);
+  void PushPrevious(vector<unsigned int> &indices);
   bool IsAsciiDigit(const char &sym);
   void SetDefaultValues();
+  void CleanContainer(vector<float> &container);
+  void CleanContainer(vector<unsigned int> &container);
+  void MakeDataSubsequences();
+  void PushAttribute(vector<float> &data, unsigned int iter,
+                     unsigned int amount);
   bool IsCorrectModel();
-  void MakeIndicesSubsequences();
+  void FreeUnnecessary();
 };
 
 }  // namespace s21

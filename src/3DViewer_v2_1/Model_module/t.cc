@@ -10,5 +10,6 @@ int main() {
 
   cout << m.UploadModel(
       "/opt/goinfre/hhullen/models/portal-cube/source/model.obj");
-  // m.UploadModel("/opt/goinfre/hhullen/models/cube.obj");
+  m.UploadModel("/opt/goinfre/hhullen/models/cube.obj");
+  m.UploadModel("/opt/goinfre/hhullen/models/Kalashnikov.obj");
 }

@@ -17,9 +17,11 @@ unsigned int OBJModel::get_facets_amount() { return facets_.f_amount; }
 
 unsigned int OBJModel::get_indices_amount() { return facets_.v_indices.size(); }
 
-const vector<float> *OBJModel::get_vertexes_vector() { return &v_; }
+const vector<float> *OBJModel::get_vertexes() { return &v_; }
 
-const vector<unsigned int> *OBJModel::get_indices_vector() {
+const vector<float> *OBJModel::get_ordered_data() { return &subsequence_; }
+
+const vector<unsigned int> *OBJModel::get_indices() {
   return &facets_.v_indices;
 }
 
@@ -38,17 +40,10 @@ bool OBJModel::UploadModel(const string &file_path) {
   vn_thread =
       new thread(&OBJModel::UploadCoords, this, ref(vn_), "vn %f %f %f", 3);
   CatchThreads(v_thread, vt_thread, vn_thread, f_thread);
-  MakeIndicesSubsequences();
+  MakeDataSubsequences();
 
   if (IsCorrectModel()) {
-    facets_.facet_indices.shrink_to_fit();
-    facets_.edge_indices.shrink_to_fit();
-    facets_.vt_indices.shrink_to_fit();
-    facets_.vn_indices.shrink_to_fit();
-    facets_.v_indices.shrink_to_fit();
-    vn_.shrink_to_fit();
-    vt_.shrink_to_fit();
-    v_.shrink_to_fit();
+    FreeUnnecessary();
     returnable = true;
   } else {
     RemoveModel();
@@ -131,31 +126,59 @@ void OBJModel::CheckState(string &line) {
 
 void OBJModel::ReadFacet(string &line) {
   size_t line_zise = line.size();
-  int indexes[3] = {0};
+  int indexes[3] = {0}, counter = 0;
 
   for (size_t i = 2; i < line_zise; ++i) {
     if (line[i - 1] == ' ' && IsAsciiDigit(line[i])) {
       sscanf(&line.data()[i], facets_.format, &indexes[0], &indexes[1],
              &indexes[2]);
-      PushIndexes(indexes);
+      ++counter;
+      if (counter <= 3) {
+        PushIndexes(indexes, FacetType::Triangle);
+      } else {
+        PushIndexes(indexes, FacetType::Polygon);
+      }
     }
   }
 }
 
-void OBJModel::PushIndexes(int *indexes) {
+void OBJModel::PushIndexes(int *indexes, FacetType type) {
   if (state_ == ModelState::Vert) {
+    if (type == FacetType::Polygon) {
+      PushPrevious(facets_.v_indices);
+    }
     facets_.v_indices.push_back(indexes[0] - 1);
   } else if (state_ == ModelState::VertTex) {
+    if (type == FacetType::Polygon) {
+      PushPrevious(facets_.v_indices);
+      PushPrevious(facets_.vt_indices);
+    }
     facets_.v_indices.push_back(indexes[0] - 1);
     facets_.vt_indices.push_back(indexes[1] - 1);
   } else if (state_ == ModelState::VertNorm) {
+    if (type == FacetType::Polygon) {
+      PushPrevious(facets_.v_indices);
+      PushPrevious(facets_.vn_indices);
+    }
     facets_.v_indices.push_back(indexes[0] - 1);
     facets_.vn_indices.push_back(indexes[1] - 1);
   } else if (state_ == ModelState::VertTexNorm) {
+    if (type == FacetType::Polygon) {
+      PushPrevious(facets_.v_indices);
+      PushPrevious(facets_.vt_indices);
+      PushPrevious(facets_.vn_indices);
+    }
     facets_.v_indices.push_back(indexes[0] - 1);
     facets_.vt_indices.push_back(indexes[1] - 1);
     facets_.vn_indices.push_back(indexes[2] - 1);
   }
+}
+
+void OBJModel::PushPrevious(vector<unsigned int> &indices) {
+  unsigned int indx_1 = indices[indices.size() - 1];
+  unsigned int indx_2 = indices[indices.size() - 3];
+  indices.push_back(indx_2);
+  indices.push_back(indx_1);
 }
 
 bool OBJModel::IsAsciiDigit(const char &sym) {
@@ -163,23 +186,53 @@ bool OBJModel::IsAsciiDigit(const char &sym) {
 }
 
 void OBJModel::SetDefaultValues() {
-  v_.clear();
-  v_.shrink_to_fit();
-  vt_.clear();
-  vt_.shrink_to_fit();
-  vn_.clear();
-  vn_.shrink_to_fit();
+  CleanContainer(v_);
+  CleanContainer(vt_);
+  CleanContainer(vn_);
+  CleanContainer(facets_.v_indices);
+  CleanContainer(facets_.vt_indices);
+  CleanContainer(facets_.vn_indices);
   facets_.f_amount = 0;
-  facets_.v_indices.clear();
-  facets_.v_indices.shrink_to_fit();
-  facets_.vt_indices.clear();
-  facets_.vt_indices.shrink_to_fit();
-  facets_.vn_indices.clear();
-  facets_.vn_indices.shrink_to_fit();
-  facets_.edge_indices.clear();
-  facets_.edge_indices.shrink_to_fit();
-  facets_.facet_indices.clear();
-  facets_.facet_indices.shrink_to_fit();
+}
+
+void OBJModel::CleanContainer(vector<float> &container) {
+  container.clear();
+  container.shrink_to_fit();
+}
+
+void OBJModel::CleanContainer(vector<unsigned int> &container) {
+  container.clear();
+  container.shrink_to_fit();
+}
+
+void OBJModel::MakeDataSubsequences() {
+  vector<unsigned int>::iterator v_iter = facets_.v_indices.begin();
+  vector<unsigned int>::iterator vt_iter = facets_.vt_indices.begin();
+  vector<unsigned int>::iterator vn_iter = facets_.vn_indices.begin();
+
+  subsequence_.clear();
+  while (v_iter != facets_.v_indices.end()) {
+    PushAttribute(v_, *v_iter, 3);
+    ++v_iter;
+
+    if (state_ == ModelState::VertTex || state_ == ModelState::VertTexNorm) {
+      PushAttribute(vt_, *vt_iter, 2);
+      ++vt_iter;
+    }
+
+    if (state_ == ModelState::VertNorm || state_ == ModelState::VertTexNorm) {
+      PushAttribute(vn_, *vn_iter, 3);
+      ++vn_iter;
+    }
+  }
+}
+
+void OBJModel::PushAttribute(vector<float> &data, unsigned int iter,
+                             unsigned int amount) {
+  iter *= amount;
+  for (unsigned int i = 0; i < amount; ++i) {
+    subsequence_.push_back(data.at(iter + i));
+  }
 }
 
 bool OBJModel::IsCorrectModel() {
@@ -187,6 +240,11 @@ bool OBJModel::IsCorrectModel() {
          facets_.f_amount > 1;
 }
 
-void OBJModel::MakeIndicesSubsequences() {}
+void OBJModel::FreeUnnecessary() {
+  CleanContainer(vt_);
+  CleanContainer(vn_);
+  CleanContainer(facets_.vt_indices);
+  CleanContainer(facets_.vn_indices);
+}
 
 }  // namespace s21

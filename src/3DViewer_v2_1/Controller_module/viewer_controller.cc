@@ -20,16 +20,18 @@ unsigned int ViewerController::get_indices_amount() {
   return model_->get_indices_amount();
 }
 
-double ViewerController::get_max_value(Axis axis) {
+float ViewerController::get_max_value(Axis axis) {
   return model_->get_max_value(axis);
 }
 
-double ViewerController::get_min_value(Axis axis) {
-  return get_min_value(axis);
+float ViewerController::get_min_value(Axis axis) { return get_min_value(axis); }
+
+const vector<float> *ViewerController::get_vertexes_vector() {
+  return model_->get_vertexes_vector();
 }
 
-const vector<double> *ViewerController::get_vertexes_vector() {
-  return model_->get_vertexes_vector();
+const vector<float> *ViewerController::get_ordered_data_vector() {
+  return model_->get_ordered_data();
 }
 
 const vector<unsigned int> *ViewerController::get_indices_vector() {
