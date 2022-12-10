@@ -17,6 +17,7 @@ SOURCES += \
     View_module/viewsetup.cc \
     View_module/screencap.cc \
     View_module/oglview.cc \
+    View_module/object3d.cc \
     giflib/dgif_lib.c \
     giflib/egif_lib.c \
     giflib/gif_err.c \
@@ -34,6 +35,7 @@ HEADERS += \
     View_module/screencap.h \
     View_module/enum_parameters.h \
     View_module/oglview.h \
+    View_module/object3d.h \
     gifimage/qgifglobal.h \
     gifimage/qgifimage.h \
     gifimage/qgifimage_p.h

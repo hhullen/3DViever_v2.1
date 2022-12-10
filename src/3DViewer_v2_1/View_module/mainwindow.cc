@@ -2,10 +2,10 @@
 
 #include "./ui_mainwindow.h"
 
-namespace S21 {
+namespace s21 {
 
 MainWindow::MainWindow(ViewerController *controller, QWidget *parent)
-    : controller_(controller), QMainWindow(parent), ui_(new Ui::MainWindow) {
+    : QMainWindow(parent), ui_(new Ui::MainWindow), controller_(controller) {
   ui_->setupUi(this);
   ogl_view_ = new OGLview();
   ui_->central_widget->layout()->addWidget(ogl_view_);
@@ -96,7 +96,7 @@ void MainWindow::UpdateViewSlot() {
 }
 
 void MainWindow::UpdateTransformationPanelSlot() {
-  double x, y, z;
+  float x, y, z;
 
   ogl_view_->get_position(&x, &y, &z);
   transform_panel_->set_position(&x, &y, &z);
@@ -108,7 +108,7 @@ void MainWindow::UpdateTransformationPanelSlot() {
 }
 
 void MainWindow::UpdateTransformationSlot() {
-  double x, y, z;
+  float x, y, z;
 
   transform_panel_->get_position(&x, &y, &z);
   ogl_view_->set_position(x, y, z);
@@ -173,11 +173,11 @@ void MainWindow::OpenNewFileSlot() {
       UpdateViewSlot();
       UpdateTransformationSlot();
       SetSteerPanelComponentsAvailability(true);
-      ogl_view_->set_model_vertexes_vector(controller_->get_vertexes_vector());
-      ogl_view_->set_model_indices_vector(controller_->get_indices_vector());
-      ogl_view_->set_model_facets_amount(controller_->get_facets_amount());
-      ogl_view_->ShowEventMessage("Successfully loaded", 2000);
-      ogl_view_->DrawModel();
+//      ogl_view_->set_model_vertexes_vector(controller_->get_vertexes_vector());
+//      ogl_view_->set_model_indices_vector(controller_->get_indices_vector());
+//      ogl_view_->set_model_facets_amount(controller_->get_facets_amount());
+//      ogl_view_->ShowEventMessage("Successfully loaded", 2000);
+//      ogl_view_->DrawModel();
     } else {
       ogl_view_->ShowEventMessage("Can not upload file", 3000);
       SetSteerPanelComponentsAvailability(false);

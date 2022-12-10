@@ -3,7 +3,7 @@
 #include <QTranslator>
 
 #include "View_module/mainwindow.h"
-using S21::MainWindow;
+using s21::MainWindow;
 
 int main(int argc, char *argv[]) {
   QApplication a(argc, argv);

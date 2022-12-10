@@ -2,7 +2,7 @@
 
 #include "ui_screencap.h"
 
-namespace S21 {
+namespace s21 {
 
 ScreenCap::ScreenCap(QWidget *parent)
     : QWidget(parent), ui_(new Ui::ScreenCap) {

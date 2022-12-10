@@ -8,7 +8,7 @@ namespace Ui {
 class PTransform;
 }
 
-namespace S21 {
+namespace s21 {
 
 class PTransform : public QWidget {
   Q_OBJECT
@@ -16,12 +16,12 @@ class PTransform : public QWidget {
  public:
   explicit PTransform(QWidget *parent = nullptr);
   ~PTransform();
-  void get_position(double *x, double *y, double *z);
-  void get_angle(double *x, double *y, double *z);
-  double get_scale();
-  void set_position(double *x, double *y, double *z);
-  void set_angle(double *x, double *y, double *z);
-  void set_scale(double scale);
+  void get_position(float *x, float *y, float *z);
+  void get_angle(float *x, float *y, float *z);
+  float get_scale();
+  void set_position(float *x, float *y, float *z);
+  void set_angle(float *x, float *y, float *z);
+  void set_scale(float scale);
 
  signals:
   void DataUpdatedSignal();

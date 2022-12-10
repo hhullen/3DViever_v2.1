@@ -15,8 +15,8 @@
 #include "ptransform.h"
 #include "screencap.h"
 #include "viewsetup.h"
-using S21::OBJModel;
-using S21::ViewerController;
+using s21::OBJModel;
+using s21::ViewerController;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -24,7 +24,7 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
-namespace S21 {
+namespace s21 {
 
 class MainWindow : public QMainWindow {
   Q_OBJECT

@@ -1,6 +1,6 @@
 #include "viewer_controller.h"
 
-namespace S21 {
+namespace s21 {
 
 ViewerController::ViewerController(OBJModel *model) : model_(model) {}
 
@@ -20,14 +20,8 @@ unsigned int ViewerController::get_indices_amount() {
   return model_->get_indices_amount();
 }
 
-float ViewerController::get_max_value(Axis axis) {
-  return model_->get_max_value(axis);
-}
-
-float ViewerController::get_min_value(Axis axis) { return get_min_value(axis); }
-
 const vector<float> *ViewerController::get_vertexes_vector() {
-  return model_->get_vertexes_vector();
+  return model_->get_vertexes();
 }
 
 const vector<float> *ViewerController::get_ordered_data_vector() {
@@ -35,7 +29,7 @@ const vector<float> *ViewerController::get_ordered_data_vector() {
 }
 
 const vector<unsigned int> *ViewerController::get_indices_vector() {
-  return model_->get_indices_vector();
+  return model_->get_indices();
 }
 
-}  // namespace S21
+}  // namespace s21

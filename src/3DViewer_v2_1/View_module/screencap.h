@@ -13,7 +13,7 @@ namespace Ui {
 class ScreenCap;
 }
 
-namespace S21 {
+namespace s21 {
 
 class ScreenCap : public QWidget {
   Q_OBJECT

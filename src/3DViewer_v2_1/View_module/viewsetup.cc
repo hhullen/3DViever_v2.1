@@ -2,7 +2,7 @@
 
 #include "ui_viewsetup.h"
 
-namespace S21 {
+namespace s21 {
 
 ViewSetup::ViewSetup(QWidget *parent)
     : QWidget(parent), ui_(new Ui::ViewSetup) {

@@ -6,23 +6,26 @@
 #include <QLabel>
 #include <QMouseEvent>
 #include <QOpenGLFunctions>
-#include <QOpenGLFunctions_4_1_Compatibility>
+#include <QOpenGLContext>
 #include <QOpenGLWidget>
 #include <QTimer>
+#include <QOpenGLShaderProgram>
 #include <vector>
+#include <QMatrix4x4>
+#include <QOpenGLTexture>
 
 #include "View_module/enum_parameters.h"
+#include "object3d.h"
 using std::vector;
-
-QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 
 namespace Ui {
 class OGLview;
 }
 
-namespace S21 {
+namespace s21 {
 
-class OGLview : public QOpenGLWidget, public QOpenGLFunctions_4_1_Compatibility {
+class OGLview : public QOpenGLWidget,
+                public QOpenGLFunctions {
   Q_OBJECT
 
  public:
@@ -42,14 +45,14 @@ class OGLview : public QOpenGLWidget, public QOpenGLFunctions_4_1_Compatibility 
   void set_edges_size(int size);
   void set_vertexes_size(int size);
 
-  void set_position(double x, double y, double z);
-  void set_angle(double x, double y, double z);
-  void set_scale(double scale);
-  void get_position(double *x, double *y, double *z);
-  void get_angle(double *x, double *y, double *z);
-  double get_scale();
+  void set_position(float x, float y, float z);
+  void set_angle(float x, float y, float z);
+  void set_scale(float scale);
+  void get_position(float *x, float *y, float *z);
+  void get_angle(float *x, float *y, float *z);
+  float get_scale();
 
-  void set_model_vertexes_vector(const vector<double> *vector);
+  void set_model_vertexes_vector(const vector<float> *vector);
   void set_model_indices_vector(const vector<unsigned int> *vector);
   void set_model_facets_amount(unsigned int facets);
 
@@ -82,32 +85,41 @@ class OGLview : public QOpenGLWidget, public QOpenGLFunctions_4_1_Compatibility 
   VertexStyle vertexes_style_;
   int edges_size_;
   int vertexes_size_;
-  double position_x_;
-  double position_y_;
-  double position_z_;
-  double angle_x_;
-  double angle_y_;
-  double angle_z_;
-  double scale_;
-  double start_z_position_;
-  double axis_scale_;
+  float position_x_;
+  float position_y_;
+  float position_z_;
+  float angle_x_;
+  float angle_y_;
+  float angle_z_;
+  float scale_;
+  float start_z_position_;
+  float axis_scale_;
   float screenRatio_;
   int window_w_;
   int window_h_;
-  double fov_;
-  double dx_move_;
-  double dy_move_;
-  double dx_rotate_;
-  double dy_rotate_;
-  double far_dist_;
+  float fov_;
+  float dx_move_;
+  float dy_move_;
+  float dx_rotate_;
+  float dy_rotate_;
+  float far_dist_;
 
-  const vector<double> *vertexes_;
+  const vector<float> *vertexes_;
+  const vector<float> *ordered_data_;
   const vector<unsigned int> *indices_;
   unsigned int facets_n_;
+
+    QMatrix4x4 m_projection_;
+//    QMatrix4x4 m_transformation_;
+//    QMatrix4x4 m_rotation_;
+    QOpenGLShaderProgram program_;
+    QOpenGLTexture *texture_;
+    Object3D *object_;
 
   void initializeGL() override;
   void resizeGL(int w, int h) override;
   void paintGL() override;
+
   void SetDefaulValues();
   void SetProjectionType();
   void GetVertexesBuffer();
@@ -117,7 +129,7 @@ class OGLview : public QOpenGLWidget, public QOpenGLFunctions_4_1_Compatibility 
   void MoveModelByMouse(QPoint pos);
   void MoveModelByWheel(int dz);
   void ScaleModelByWheel(int ds);
-  void IncreaseAngle(double *angle, double dr);
+  void IncreaseAngle(float *angle, float dr);
 };
 
 }  // namespace S21

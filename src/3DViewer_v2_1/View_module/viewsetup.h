@@ -13,7 +13,7 @@ namespace Ui {
 class ViewSetup;
 }
 
-namespace S21 {
+namespace s21 {
 
 class ViewSetup : public QWidget {
   Q_OBJECT

@@ -2,7 +2,7 @@
 
 #include "ui_ptransform.h"
 
-namespace S21 {
+namespace s21 {
 
 PTransform::PTransform(QWidget *parent)
     : QWidget(parent), ui_(new Ui::PTransform) {
@@ -13,7 +13,7 @@ PTransform::PTransform(QWidget *parent)
 
 PTransform::~PTransform() { delete ui_; }
 
-void PTransform::get_position(double *x, double *y, double *z) {
+void PTransform::get_position(float *x, float *y, float *z) {
   if (x) {
     *x = ui_->d_spin_box_x_pos->value();
   }
@@ -25,7 +25,7 @@ void PTransform::get_position(double *x, double *y, double *z) {
   }
 }
 
-void PTransform::get_angle(double *x, double *y, double *z) {
+void PTransform::get_angle(float *x, float *y, float *z) {
   if (x) {
     *x = ui_->d_spin_box_x_ang->value();
   }
@@ -37,9 +37,9 @@ void PTransform::get_angle(double *x, double *y, double *z) {
   }
 }
 
-double PTransform::get_scale() { return ui_->d_spin_box_scale->value(); }
+float PTransform::get_scale() { return ui_->d_spin_box_scale->value(); }
 
-void PTransform::set_position(double *x, double *y, double *z) {
+void PTransform::set_position(float *x, float *y, float *z) {
   if (x) {
     ui_->d_spin_box_x_pos->setValue(*x);
   }
@@ -51,7 +51,7 @@ void PTransform::set_position(double *x, double *y, double *z) {
   }
 }
 
-void PTransform::set_angle(double *x, double *y, double *z) {
+void PTransform::set_angle(float *x, float *y, float *z) {
   if (x) {
     ui_->d_spin_box_x_ang->setValue(*x);
   }
@@ -63,7 +63,7 @@ void PTransform::set_angle(double *x, double *y, double *z) {
   }
 }
 
-void PTransform::set_scale(double scale) {
+void PTransform::set_scale(float scale) {
   ui_->d_spin_box_scale->setValue(scale);
 }
 
