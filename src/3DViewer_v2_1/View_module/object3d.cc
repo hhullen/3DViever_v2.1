@@ -67,7 +67,6 @@ void Object3D::draw(QOpenGLShaderProgram *program, QOpenGLFunctions *gl_function
     index_buffer_.bind();
 
     gl_functions->glDrawElements(GL_TRIANGLES, index_buffer_.size(), GL_UNSIGNED_INT, 0);
-//    gl_functions->glDrawElements(GL_LINES, index_buffer_.size(), GL_UNSIGNED_INT, )
 
     vertex_buffer_.release();
     index_buffer_.release();

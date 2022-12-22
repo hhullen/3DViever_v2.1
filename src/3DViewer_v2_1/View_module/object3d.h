@@ -19,15 +19,15 @@ public:
     Object3D(const vector<float> &vertex, const vector<unsigned int> &indices, const QImage &texture);
     ~Object3D();
 
+    void init(const vector<float> &vertex, const vector<unsigned int> &indices, const QImage &texture);
+    void draw(QOpenGLShaderProgram *program, QOpenGLFunctions *gl_functions);
+
 private:
     QOpenGLBuffer vertex_buffer_;
     QOpenGLBuffer index_buffer_;
     QOpenGLTexture *texture_;
 
     QMatrix4x4 m_model_matrix_;
-
-    void init(const vector<float> &vertex, const vector<unsigned int> &indices, const QImage &texture);
-    void draw(QOpenGLShaderProgram *program, QOpenGLFunctions *gl_functions);
 };
 
 }

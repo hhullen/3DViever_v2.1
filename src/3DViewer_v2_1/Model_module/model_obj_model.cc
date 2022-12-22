@@ -17,7 +17,10 @@ unsigned int OBJModel::get_facets_amount() { return facets_.f_amount; }
 
 unsigned int OBJModel::get_indices_amount() { return facets_.v_indices.size(); }
 
-const vector<float> *OBJModel::get_vertexes() { return &v_; }
+const vector<float> *OBJModel::get_vertexes() {
+  // return &v_;
+  return &subsequence_;
+}
 
 const vector<float> *OBJModel::get_ordered_data() { return &subsequence_; }
 
@@ -186,13 +189,13 @@ bool OBJModel::IsAsciiDigit(const char &sym) {
 }
 
 void OBJModel::SetDefaultValues() {
-  CleanContainer(v_);
-  CleanContainer(vt_);
-  CleanContainer(vn_);
-  CleanContainer(facets_.v_indices);
-  CleanContainer(facets_.vt_indices);
   CleanContainer(facets_.vn_indices);
+  CleanContainer(facets_.vt_indices);
+  CleanContainer(facets_.v_indices);
   facets_.f_amount = 0;
+  CleanContainer(vn_);
+  CleanContainer(vt_);
+  CleanContainer(v_);
 }
 
 void OBJModel::CleanContainer(vector<float> &container) {
@@ -218,12 +221,23 @@ void OBJModel::MakeDataSubsequences() {
     if (state_ == ModelState::VertTex || state_ == ModelState::VertTexNorm) {
       PushAttribute(vt_, *vt_iter, 2);
       ++vt_iter;
+    } else {
+      subsequence_.push_back(0);
+      subsequence_.push_back(0);
     }
 
     if (state_ == ModelState::VertNorm || state_ == ModelState::VertTexNorm) {
       PushAttribute(vn_, *vn_iter, 3);
       ++vn_iter;
+    } else {
+      subsequence_.push_back(0);
+      subsequence_.push_back(0);
+      subsequence_.push_back(0);
     }
+  }
+
+  for (auto f : subsequence_) {
+    std::cout << f << "\n";
   }
 }
 
@@ -236,8 +250,12 @@ void OBJModel::PushAttribute(vector<float> &data, unsigned int iter,
 }
 
 bool OBJModel::IsCorrectModel() {
-  return v_.size() / 3 == vt_.size() / 2 && v_.size() / 3 == vn_.size() / 3 &&
-         facets_.f_amount > 1;
+  // std::cout << "v " << v_.size() / 3 << " vt " << vt_.size() / 2 << " vn "
+  //           << vn_.size() / 3 << " \n";
+  return v_.size() > 3 && facets_.f_amount > 1;
+  // return v_.size() / 3 == vt_.size() / 2 && v_.size() / 3 == vn_.size() / 3
+  // &&
+  //        facets_.f_amount > 1;
 }
 
 void OBJModel::FreeUnnecessary() {

@@ -85,12 +85,8 @@ class OGLview : public QOpenGLWidget,
   VertexStyle vertexes_style_;
   int edges_size_;
   int vertexes_size_;
-  float position_x_;
-  float position_y_;
-  float position_z_;
-  float angle_x_;
-  float angle_y_;
-  float angle_z_;
+  QVector3D position_;
+  QVector3D angle_;
   float scale_;
   float start_z_position_;
   float axis_scale_;
@@ -98,10 +94,6 @@ class OGLview : public QOpenGLWidget,
   int window_w_;
   int window_h_;
   float fov_;
-  float dx_move_;
-  float dy_move_;
-  float dx_rotate_;
-  float dy_rotate_;
   float far_dist_;
 
   const vector<float> *vertexes_;
@@ -110,10 +102,10 @@ class OGLview : public QOpenGLWidget,
   unsigned int facets_n_;
 
     QMatrix4x4 m_projection_;
-//    QMatrix4x4 m_transformation_;
-//    QMatrix4x4 m_rotation_;
+    QMatrix4x4 m_view_;
     QOpenGLShaderProgram program_;
     QOpenGLTexture *texture_;
+    QImage texture_color_;
     Object3D *object_;
 
   void initializeGL() override;

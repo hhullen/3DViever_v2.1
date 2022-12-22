@@ -5,4 +5,8 @@
     <qresource prefix="/font">
         <file>Resources/microsoftsansserif.ttf</file>
     </qresource>
+    <qresource prefix="/shaders">
+        <file>View_module/fshader.frag</file>
+        <file>View_module/vshader.vert</file>
+    </qresource>
 </RCC>

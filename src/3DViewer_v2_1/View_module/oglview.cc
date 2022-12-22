@@ -12,9 +12,10 @@ OGLview::OGLview(QWidget *parent)
   SetDefaulValues();
 
   timer_ = new QTimer(this);
-  connect(timer_, SIGNAL(timeout()), this, SLOT(ClearMessageSlot()));
+  connect(timer_, &QTimer::timeout, this, &OGLview::ClearMessageSlot);
   update();
-//  gl_func_ = QOpenGLContext::currentContext()->functions();
+  texture_color_.fill(QColor(200, 100, 0));
+  texture_ = new QOpenGLTexture(texture_color_);
 }
 
 OGLview::~OGLview() { delete ui_; }
@@ -44,40 +45,40 @@ void OGLview::set_edges_size(int size) { edges_size_ = size; }
 void OGLview::set_vertexes_size(int size) { vertexes_size_ = size; }
 
 void OGLview::set_position(float x, float y, float z) {
-  position_x_ = x;
-  position_y_ = y;
-  position_z_ = z;
+  position_.setX(x);
+  position_.setY(y);
+  position_.setZ(z);
 }
 
 void OGLview::set_angle(float x, float y, float z) {
-  angle_x_ = x;
-  angle_y_ = y;
-  angle_z_ = z;
+  angle_.setX(x);
+  angle_.setY(y);
+  angle_.setZ(z);
 }
 
 void OGLview::set_scale(float scale) { scale_ = scale; }
 
 void OGLview::get_position(float *x, float *y, float *z) {
   if (x) {
-    *x = position_x_;
+    *x = position_.x();
   }
   if (y) {
-    *y = position_y_;
+    *y = position_.y();
   }
   if (z) {
-    *z = position_z_;
+    *z = position_.z();
   }
 }
 
 void OGLview::get_angle(float *x, float *y, float *z) {
   if (x) {
-    *x = angle_x_;
+    *x = angle_.x();
   }
   if (y) {
-    *y = angle_y_;
+    *y = angle_.y();
   }
   if (z) {
-    *z = angle_z_;
+    *z = angle_.z();
   }
 }
 
@@ -98,6 +99,11 @@ void OGLview::set_model_facets_amount(unsigned int facets) {
 
 void OGLview::DrawModel() {
   if (vertexes_ && indices_) {
+    if (object_) {
+        delete object_;
+    }
+    object_ = new Object3D(*vertexes_, *indices_, texture_color_);
+
     new_model_loaded_ = true;
     projection_type_changed_ = true;
     QOpenGLWidget::update();
@@ -105,13 +111,15 @@ void OGLview::DrawModel() {
 }
 
 void OGLview::initializeGL() {
-  initializeOpenGLFunctions();
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
+    gl_func_ = QOpenGLContext::currentContext()->functions();
+    gl_func_->glEnable(GL_DEPTH_TEST);
+    gl_func_->glEnable(GL_CULL_FACE);
   m_projection_.setToIdentity();
-//  m_transformation_.setToIdentity();
-//  m_rotation_.setToIdentity();
-//  start_z_position_ = axis_scale_ / qTan(fov_ * M_PI / 180) + 1;
+  m_view_.setToIdentity();
+
+  program_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/View_module/fshader.frag");
+  program_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/View_module/vshader.vert");
+  program_.link();
 }
 
 void OGLview::resizeGL(int w, int h) {
@@ -119,27 +127,18 @@ void OGLview::resizeGL(int w, int h) {
   window_h_ = h;
   screenRatio_ = w / float(h);
 
-  glViewport(0, 0, w, h);
+  gl_func_->glViewport(0, 0, w, h);
   SetProjectionType();
 }
 
 void OGLview::paintGL() {
-  glClearColor(background_color_.redF(), background_color_.greenF(),
-               background_color_.blueF(), 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//  if (vertexes_ && indices_) {
-//    if (projection_type_changed_) {
-//      SetProjectionType();
-//    }
-//    SetModelPosition();
-//    if (new_model_loaded_) {
-//      GetVertexesBuffer();
-//    }
-//    glEnableClientState(GL_VERTEX_ARRAY);
-//    DrawPoints();
-//    DrawLines();
-//    glDisableClientState(GL_VERTEX_ARRAY);
-//  }
+    gl_func_->glClearColor(background_color_.redF(), background_color_.greenF(),
+                           background_color_.blueF(), 1.0f);
+    gl_func_->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  if (vertexes_ && indices_) {
+
+//    object_->draw(&program_, gl_func_);
+  }
 }
 
 void OGLview::SetDefaulValues() {
@@ -156,61 +155,54 @@ void OGLview::SetDefaulValues() {
 }
 
 void OGLview::GetVertexesBuffer() {
-  glVertexPointer(3, GL_DOUBLE, 0, vertexes_->data());
-  new_model_loaded_ = false;
+//  glVertexPointer(3, GL_DOUBLE, 0, vertexes_->data());
+//  new_model_loaded_ = false;
 }
 
 void OGLview::SetModelPosition() {
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  glTranslated(0, 0, -start_z_position_);
-  glTranslated(position_x_, position_y_, position_z_ - 5);
-  glRotatef(angle_x_, -1, 0, 0);
-  glRotatef(angle_y_, 0, 1, 0);
-  glRotatef(angle_z_, 0, 0, 1);
-  glScalef(scale_, scale_, scale_);
+//  glMatrixMode(GL_MODELVIEW);
+//  glLoadIdentity();
+//  glTranslated(0, 0, -start_z_position_);
+//  glTranslated(position_x_, position_y_, position_z_ - 5);
+//  glRotatef(angle_x_, -1, 0, 0);
+//  glRotatef(angle_y_, 0, 1, 0);
+//  glRotatef(angle_z_, 0, 0, 1);
+//  glScalef(scale_, scale_, scale_);
 }
 
 void OGLview::DrawPoints() {
-  if (vertexes_style_ == VertexStyle::ROUND) {
-    glEnable(GL_POINT_SMOOTH);
-  } else if (vertexes_style_ == VertexStyle::SQUARE) {
-    glDisable(GL_POINT_SMOOTH);
-  }
-  glPointSize(vertexes_size_);
-  glColor3d(vertexes_color_.redF(), vertexes_color_.greenF(),
-            vertexes_color_.blueF());
-  if (vertexes_style_ != VertexStyle::NONE) {
-    glDrawArrays(GL_POINTS, 0, vertexes_->size() / 3);
-  }
+//  if (vertexes_style_ == VertexStyle::ROUND) {
+//    glEnable(GL_POINT_SMOOTH);
+//  } else if (vertexes_style_ == VertexStyle::SQUARE) {
+//    glDisable(GL_POINT_SMOOTH);
+//  }
+//  glPointSize(vertexes_size_);
+//  glColor3d(vertexes_color_.redF(), vertexes_color_.greenF(),
+//            vertexes_color_.blueF());
+//  if (vertexes_style_ != VertexStyle::NONE) {
+//    glDrawArrays(GL_POINTS, 0, vertexes_->size() / 3);
+//  }
 }
 
 void OGLview::DrawLines() {
-  if (edges_style_ == EdgeStyle::STIPPLE) {
-    glLineStipple(2, 0x00F0);
-    glEnable(GL_LINE_STIPPLE);
-  } else if (edges_style_ == EdgeStyle::SOLID) {
-    glDisable(GL_LINE_STIPPLE);
-  }
-  glLineWidth(edges_size_);
-  glColor3d(edges_color_.redF(), edges_color_.greenF(), edges_color_.blueF());
-  glDrawElements(GL_LINES, indices_->size(), GL_UNSIGNED_INT, indices_->data());
+//  if (edges_style_ == EdgeStyle::STIPPLE) {
+//    glLineStipple(2, 0x00F0);
+//    glEnable(GL_LINE_STIPPLE);
+//  } else if (edges_style_ == EdgeStyle::SOLID) {
+//    glDisable(GL_LINE_STIPPLE);
+//  }
+//  glLineWidth(edges_size_);
+//  glColor3d(edges_color_.redF(), edges_color_.greenF(), edges_color_.blueF());
+//  glDrawElements(GL_LINES, indices_->size(), GL_UNSIGNED_INT, indices_->data());
 }
 
 void OGLview::SetProjectionType() {
-//  glMatrixMode(GL_PROJECTION);
-//  glLoadIdentity();
+    m_projection_.setToIdentity();
   if (projection_type_ == ProjectionType::PERSPECTIVE) {
       m_projection_.perspective(fov_, screenRatio_, 0.01, far_dist_ + 2000);
-//    glFrustum(-axis_scale_ * screenRatio_, axis_scale_ * screenRatio_,
-//              -axis_scale_, axis_scale_, 3, far_dist_);
-//    glTranslated(0, 0, -start_z_position_);
   } else if (projection_type_ == ProjectionType::ORTHOGONAL) {
       m_projection_.ortho(-axis_scale_ * screenRatio_, axis_scale_ * screenRatio_,
                              -axis_scale_, axis_scale_, 0.01, far_dist_ + 2000);
-//    glOrtho(-axis_scale_ * screenRatio_, axis_scale_ * screenRatio_,
-//            -axis_scale_, axis_scale_, 3, far_dist_);
-//    glTranslated(0, 0, -start_z_position_);
   }
   projection_type_changed_ = false;
 }
@@ -227,12 +219,14 @@ void OGLview::mousePressEvent(QMouseEvent *event) {
   new_cursor_.setShape(Qt::ClosedHandCursor);
   setCursor(new_cursor_);
   left_mouse_button_ = event->button() == Qt::LeftButton;
+  event->accept();
 }
 
 void OGLview::mouseReleaseEvent(QMouseEvent *event) {
   new_cursor_.setShape(Qt::OpenHandCursor);
   setCursor(new_cursor_);
   left_mouse_button_ = false;
+  event->accept();
 }
 
 void OGLview::mouseMoveEvent(QMouseEvent *event) {
@@ -253,12 +247,12 @@ void OGLview::wheelEvent(QWheelEvent *event) {
 }
 
 void OGLview::MoveModelByWheel(int dz) {
-  if (dz > 0) {
-    position_z_ += 1;
-  } else if (dz < 0) {
-    position_z_ -= 1;
-  }
-  update();
+//  if (dz > 0) {
+//    position_. += 1;
+//  } else if (dz < 0) {
+//    position_z_ -= 1;
+//  }
+//  update();
 }
 
 void OGLview::ScaleModelByWheel(int ds) {
@@ -271,23 +265,23 @@ void OGLview::ScaleModelByWheel(int ds) {
 }
 
 void OGLview::MoveModelByMouse(QPoint pos) {
-  if (key_space_) {
-    dx_move_ = axis_scale_ * 2 * pos.x() / window_w_;
-    dy_move_ = axis_scale_ * 2 * -pos.y() / window_h_;
+//  if (key_space_) {
+//    float dx_move_ = axis_scale_ * 2 * pos.x() / window_w_;
+//    float dy_move_ = axis_scale_ * 2 * -pos.y() / window_h_;
 
-    position_x_ += dx_move_;
-    position_y_ += dy_move_;
-  } else {
-    dx_rotate_ = axis_scale_ * 100 * pos.x() / window_w_;
-    dy_rotate_ = axis_scale_ * 100 * -pos.y() / window_h_;
+//    position_x_ += dx_move_;
+//    position_y_ += dy_move_;
+//  } else {
+//    float dx_rotate_ = axis_scale_ * 100 * pos.x() / window_w_;
+//    float dy_rotate_ = axis_scale_ * 100 * -pos.y() / window_h_;
 
-    IncreaseAngle(&angle_x_, dy_rotate_);
-    IncreaseAngle(&angle_y_, dx_rotate_);
-  }
-  if (vertexes_ && indices_) {
-    emit PositionUpdatedSignal();
-  }
-  update();
+//    IncreaseAngle(&angle_x_, dy_rotate_);
+//    IncreaseAngle(&angle_y_, dx_rotate_);
+//  }
+//  if (vertexes_ && indices_) {
+//    emit PositionUpdatedSignal();
+//  }
+//  update();
 }
 
 void OGLview::IncreaseAngle(float *angle, float dr) {
