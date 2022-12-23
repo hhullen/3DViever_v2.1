@@ -117,9 +117,13 @@ void OGLview::paintGL() {
                            background_color_.blueF(), 1.0f);
     gl_func_->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   if (vertexes_ && indices_) {
+
       m_view_.setToIdentity();
       m_view_.translate(position_);
+      m_view_.translate(0,0, -3);
       m_view_.rotate(rotation_);
+      m_view_.scale(scale_);
+
       projection_type_changed_ = true;
       SetProjectionType();
 
@@ -127,9 +131,11 @@ void OGLview::paintGL() {
       program_.setUniformValue("u_projection_matrix", m_projection_);
       program_.setUniformValue("u_view_matrix", m_view_);
       program_.setUniformValue("u_light_position", QVector4D(0.0, 0.0, 0.0, 1.0));
-      program_.setUniformValue("u_light_power", 5.0f);
+      program_.setUniformValue("u_light_power", 10.0f);
 
-    object_->draw(&program_, gl_func_);
+      object_->setup_edges(edges_size_, edges_color_, edges_style_);
+      object_->setup_vertexes(vertexes_size_, vertexes_color_,vertexes_style_);
+      object_->draw(&program_, gl_func_);
   }
 }
 
@@ -227,7 +233,7 @@ void OGLview::mouseMoveEvent(QMouseEvent *event) {
 
   float length = diff.length() / 2;
 
-  QVector3D axis(-diff.y(), -diff.x(), 0.0);
+  QVector3D axis(diff.y(), diff.x(), 0.0);
 
     rotation_ = QQuaternion::fromAxisAndAngle(axis, length) * rotation_;
     QOpenGLWidget::update();

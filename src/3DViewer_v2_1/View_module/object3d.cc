@@ -70,14 +70,50 @@ void Object3D::draw(QOpenGLShaderProgram *program, QOpenGLFunctions *gl_function
     index_buffer_.bind();
 
     gl_functions->glDrawElements(GL_TRIANGLES, index_buffer_.size(), GL_UNSIGNED_INT, 0);
-    glPointSize(20);
-    gl_functions->glDrawArrays(GL_POINTS, 0, vertexes_);
-    glLineWidth(10);
-    gl_functions->glDrawElements(GL_LINES, indices_, GL_UNSIGNED_INT, 0);
+//    DrawVertexes(gl_functions);
+//    DrawEdges(gl_functions);
 
     vertex_buffer_.release();
     index_buffer_.release();
     texture_->release();
+}
+
+void Object3D::setup_vertexes(int size, QColor color, VertexStyle style) {
+    vertexes_size_ = size;
+    vertexes_color_ = color;
+    vertexes_style_ = style;
+}
+
+void Object3D::setup_edges(int size, QColor color, EdgeStyle style) {
+    edges_size_ = size;
+    edges_color_ = color;
+    edges_style_ = style;
+}
+
+void Object3D::DrawVertexes(QOpenGLFunctions *gl_function) {
+      if (vertexes_style_ == VertexStyle::ROUND) {
+        glEnable(GL_POINT_SMOOTH);
+      } else if (vertexes_style_ == VertexStyle::SQUARE) {
+        glDisable(GL_POINT_SMOOTH);
+      }
+      glPointSize(vertexes_size_);
+      glColor3f(vertexes_color_.redF(), vertexes_color_.greenF(),
+                vertexes_color_.blueF());
+      if (vertexes_style_ != VertexStyle::NONE) {
+        gl_function->glDrawArrays(GL_POINTS, 0, vertexes_);
+      }
+}
+
+void Object3D::DrawEdges(QOpenGLFunctions *gl_function) {
+      if (edges_style_ == EdgeStyle::STIPPLE) {
+        glLineStipple(2, 0x00F0);
+        glEnable(GL_LINE_STIPPLE);
+      } else if (edges_style_ == EdgeStyle::SOLID) {
+        glDisable(GL_LINE_STIPPLE);
+      }
+      glLineWidth(edges_size_);
+      glColor3f(edges_color_.redF(), edges_color_.greenF(), edges_color_.blueF());
+      gl_function->glDrawElements(GL_LINES, indices_, GL_UNSIGNED_INT, 0);
 }
 
 }

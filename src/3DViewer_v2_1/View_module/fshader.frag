@@ -14,7 +14,7 @@ void main(void)
     vec3 light_vector = normalize(v_position.xyz - u_light_position.xyz);
     vec3 reflect_light = normalize(reflect(light_vector, v_normal));
     float len = length(v_position.xyz - eye_position.xyz);
-    float specular_factor = 10.0;
+    float specular_factor = 100.0;
     float ambient_factor = 0.1;
 
     vec4 diffuse_color = diffuse_mat_color  * u_light_power * max(0.0, dot(v_normal, -light_vector)) / (1.0 + 0.25 * pow(len, 2.0));
