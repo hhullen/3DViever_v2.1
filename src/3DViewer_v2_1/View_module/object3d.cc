@@ -39,6 +39,9 @@ void Object3D::init(const std::vector<float> &vertex, const std::vector<unsigned
     texture_->setMinificationFilter(QOpenGLTexture::Nearest);
     texture_->setMagnificationFilter(QOpenGLTexture::Linear);
     texture_->setWrapMode(QOpenGLTexture::Repeat);
+
+    vertexes_ = vertex.size() / 8;
+    indices_ = indices.size();
 }
 
 void Object3D::draw(QOpenGLShaderProgram *program, QOpenGLFunctions *gl_functions) {
@@ -67,6 +70,10 @@ void Object3D::draw(QOpenGLShaderProgram *program, QOpenGLFunctions *gl_function
     index_buffer_.bind();
 
     gl_functions->glDrawElements(GL_TRIANGLES, index_buffer_.size(), GL_UNSIGNED_INT, 0);
+    glPointSize(20);
+    gl_functions->glDrawArrays(GL_POINTS, 0, vertexes_);
+    glLineWidth(10);
+    gl_functions->glDrawElements(GL_LINES, indices_, GL_UNSIGNED_INT, 0);
 
     vertex_buffer_.release();
     index_buffer_.release();

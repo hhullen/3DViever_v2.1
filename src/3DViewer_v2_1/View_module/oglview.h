@@ -13,6 +13,7 @@
 #include <vector>
 #include <QMatrix4x4>
 #include <QOpenGLTexture>
+#include <QQuaternion>
 
 #include "View_module/enum_parameters.h"
 #include "object3d.h"
@@ -45,11 +46,11 @@ class OGLview : public QOpenGLWidget,
   void set_edges_size(int size);
   void set_vertexes_size(int size);
 
-  void set_position(float x, float y, float z);
-  void set_angle(float x, float y, float z);
+  void set_position(QVector3D positions);
+  void set_angle(QVector3D angles);
   void set_scale(float scale);
-  void get_position(float *x, float *y, float *z);
-  void get_angle(float *x, float *y, float *z);
+  QVector3D *get_position();
+  QVector3D *get_angle();
   float get_scale();
 
   void set_model_vertexes_vector(const vector<float> *vector);
@@ -71,7 +72,7 @@ class OGLview : public QOpenGLWidget,
   QOpenGLFunctions *gl_func_;
   QTimer *timer_;
   QCursor new_cursor_;
-  QPoint mouse_now_;
+  QVector2D mouse_now_;
   bool key_space_;
   bool left_mouse_button_;
   bool new_model_loaded_;
@@ -103,9 +104,9 @@ class OGLview : public QOpenGLWidget,
 
     QMatrix4x4 m_projection_;
     QMatrix4x4 m_view_;
+    QQuaternion rotation_;
     QOpenGLShaderProgram program_;
-    QOpenGLTexture *texture_;
-    QImage texture_color_;
+    QImage *texture_;
     Object3D *object_;
 
   void initializeGL() override;

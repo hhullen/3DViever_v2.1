@@ -13,54 +13,36 @@ PTransform::PTransform(QWidget *parent)
 
 PTransform::~PTransform() { delete ui_; }
 
-void PTransform::get_position(float *x, float *y, float *z) {
-  if (x) {
-    *x = ui_->d_spin_box_x_pos->value();
-  }
-  if (y) {
-    *y = ui_->d_spin_box_y_pos->value();
-  }
-  if (z) {
-    *z = ui_->d_spin_box_z_pos->value();
-  }
+QVector3D PTransform::get_position() {
+    QVector3D position;
+    position.setX(ui_->d_spin_box_x_pos->value());
+    position.setY(ui_->d_spin_box_y_pos->value());
+    position.setZ(ui_->d_spin_box_z_pos->value());
+
+    return position;
 }
 
-void PTransform::get_angle(float *x, float *y, float *z) {
-  if (x) {
-    *x = ui_->d_spin_box_x_ang->value();
-  }
-  if (y) {
-    *y = ui_->d_spin_box_y_ang->value();
-  }
-  if (z) {
-    *z = ui_->d_spin_box_z_ang->value();
-  }
+QVector3D PTransform::get_angle() {
+    QVector3D angle;
+    angle.setX(ui_->d_spin_box_x_ang->value());
+    angle.setY(ui_->d_spin_box_y_ang->value());
+    angle.setZ(ui_->d_spin_box_z_ang->value());
+
+    return angle;
 }
 
 float PTransform::get_scale() { return ui_->d_spin_box_scale->value(); }
 
-void PTransform::set_position(float *x, float *y, float *z) {
-  if (x) {
-    ui_->d_spin_box_x_pos->setValue(*x);
-  }
-  if (y) {
-    ui_->d_spin_box_y_pos->setValue(*y);
-  }
-  if (z) {
-    ui_->d_spin_box_z_pos->setValue(*z);
-  }
+void PTransform::set_position(QVector3D position) {
+    ui_->d_spin_box_x_pos->setValue(position.x());
+    ui_->d_spin_box_y_pos->setValue(position.y());
+    ui_->d_spin_box_z_pos->setValue(position.z());
 }
 
-void PTransform::set_angle(float *x, float *y, float *z) {
-  if (x) {
-    ui_->d_spin_box_x_ang->setValue(*x);
-  }
-  if (y) {
-    ui_->d_spin_box_y_ang->setValue(*y);
-  }
-  if (z) {
-    ui_->d_spin_box_z_ang->setValue(*z);
-  }
+void PTransform::set_angle(QVector3D angle) {
+    ui_->d_spin_box_x_ang->setValue(angle.x());
+    ui_->d_spin_box_y_ang->setValue(angle.y());
+    ui_->d_spin_box_z_ang->setValue(angle.z());
 }
 
 void PTransform::set_scale(float scale) {

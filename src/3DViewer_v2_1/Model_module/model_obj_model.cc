@@ -235,10 +235,22 @@ void OBJModel::MakeDataSubsequences() {
       subsequence_.push_back(0);
     }
   }
-
-  for (auto f : subsequence_) {
-    std::cout << f << "\n";
+  size_t size = facets_.v_indices.size();
+  facets_.v_indices.clear();
+  for (size_t i = 0; i < size; i += 3) {
+    facets_.v_indices.push_back(i);
+    facets_.v_indices.push_back(i + 1);
+    facets_.v_indices.push_back(i + 2);
+    // facets_.v_indices.push_back(i + 1);
+    // facets_.v_indices.push_back(i + 2);
+    // facets_.v_indices.push_back(i + 2);
+    // facets_.v_indices.push_back(i + 1);
+    // facets_.v_indices.push_back(i + 3);
   }
+
+  // for (auto f : subsequence_) {
+  //   std::cout << f << "\n";
+  // }
 }
 
 void OBJModel::PushAttribute(vector<float> &data, unsigned int iter,

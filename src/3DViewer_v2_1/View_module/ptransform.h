@@ -3,6 +3,7 @@
 
 #include <QDoubleSpinBox>
 #include <QWidget>
+#include <QVector3D>
 
 namespace Ui {
 class PTransform;
@@ -16,11 +17,11 @@ class PTransform : public QWidget {
  public:
   explicit PTransform(QWidget *parent = nullptr);
   ~PTransform();
-  void get_position(float *x, float *y, float *z);
-  void get_angle(float *x, float *y, float *z);
+  QVector3D get_position();
+  QVector3D get_angle();
   float get_scale();
-  void set_position(float *x, float *y, float *z);
-  void set_angle(float *x, float *y, float *z);
+  void set_position(QVector3D position);
+  void set_angle(QVector3D angle);
   void set_scale(float scale);
 
  signals:

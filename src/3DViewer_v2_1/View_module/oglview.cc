@@ -5,7 +5,7 @@
 namespace s21 {
 
 OGLview::OGLview(QWidget *parent)
-    : QOpenGLWidget(parent), ui_(new Ui::OGLview), texture_(nullptr) {
+    : QOpenGLWidget(parent), ui_(new Ui::OGLview), texture_(nullptr), object_(nullptr) {
   ui_->setupUi(this);
   new_cursor_.setShape(Qt::OpenHandCursor);
   setCursor(new_cursor_);
@@ -14,8 +14,8 @@ OGLview::OGLview(QWidget *parent)
   timer_ = new QTimer(this);
   connect(timer_, &QTimer::timeout, this, &OGLview::ClearMessageSlot);
   update();
-  texture_color_.fill(QColor(200, 100, 0));
-  texture_ = new QOpenGLTexture(texture_color_);
+  texture_ = new QImage(10, 10, QImage::Format_ARGB32);
+  texture_->fill(QColor(200, 50, 100));
 }
 
 OGLview::~OGLview() { delete ui_; }
@@ -44,42 +44,22 @@ void OGLview::set_edges_size(int size) { edges_size_ = size; }
 
 void OGLview::set_vertexes_size(int size) { vertexes_size_ = size; }
 
-void OGLview::set_position(float x, float y, float z) {
-  position_.setX(x);
-  position_.setY(y);
-  position_.setZ(z);
+void OGLview::set_position(QVector3D positions) {
+  position_ = positions;
 }
 
-void OGLview::set_angle(float x, float y, float z) {
-  angle_.setX(x);
-  angle_.setY(y);
-  angle_.setZ(z);
+void OGLview::set_angle(QVector3D angles) {
+  angle_ = angles;
 }
 
 void OGLview::set_scale(float scale) { scale_ = scale; }
 
-void OGLview::get_position(float *x, float *y, float *z) {
-  if (x) {
-    *x = position_.x();
-  }
-  if (y) {
-    *y = position_.y();
-  }
-  if (z) {
-    *z = position_.z();
-  }
+QVector3D *OGLview::get_position() {
+    return &position_;
 }
 
-void OGLview::get_angle(float *x, float *y, float *z) {
-  if (x) {
-    *x = angle_.x();
-  }
-  if (y) {
-    *y = angle_.y();
-  }
-  if (z) {
-    *z = angle_.z();
-  }
+QVector3D *OGLview::get_angle() {
+  return &angle_;
 }
 
 float OGLview::get_scale() { return scale_; }
@@ -102,7 +82,7 @@ void OGLview::DrawModel() {
     if (object_) {
         delete object_;
     }
-    object_ = new Object3D(*vertexes_, *indices_, texture_color_);
+    object_ = new Object3D(*vertexes_, *indices_, *texture_);
 
     new_model_loaded_ = true;
     projection_type_changed_ = true;
@@ -114,7 +94,6 @@ void OGLview::initializeGL() {
     gl_func_ = QOpenGLContext::currentContext()->functions();
     gl_func_->glEnable(GL_DEPTH_TEST);
     gl_func_->glEnable(GL_CULL_FACE);
-  m_projection_.setToIdentity();
   m_view_.setToIdentity();
 
   program_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/View_module/fshader.frag");
@@ -127,6 +106,8 @@ void OGLview::resizeGL(int w, int h) {
   window_h_ = h;
   screenRatio_ = w / float(h);
 
+//  m_projection_.setToIdentity();
+//  m_projection_.perspective(45, screenRatio_, 0.01f, 2000.0f);
   gl_func_->glViewport(0, 0, w, h);
   SetProjectionType();
 }
@@ -136,8 +117,19 @@ void OGLview::paintGL() {
                            background_color_.blueF(), 1.0f);
     gl_func_->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   if (vertexes_ && indices_) {
+      m_view_.setToIdentity();
+      m_view_.translate(position_);
+      m_view_.rotate(rotation_);
+      projection_type_changed_ = true;
+      SetProjectionType();
 
-//    object_->draw(&program_, gl_func_);
+      program_.bind();
+      program_.setUniformValue("u_projection_matrix", m_projection_);
+      program_.setUniformValue("u_view_matrix", m_view_);
+      program_.setUniformValue("u_light_position", QVector4D(0.0, 0.0, 0.0, 1.0));
+      program_.setUniformValue("u_light_power", 5.0f);
+
+    object_->draw(&program_, gl_func_);
   }
 }
 
@@ -215,7 +207,7 @@ void OGLview::ShowEventMessage(QString message, int delay) {
 void OGLview::ClearMessageSlot() { ui_->label_message->clear(); }
 
 void OGLview::mousePressEvent(QMouseEvent *event) {
-  mouse_now_ = event->pos();
+  mouse_now_ = QVector2D(event->pos());
   new_cursor_.setShape(Qt::ClosedHandCursor);
   setCursor(new_cursor_);
   left_mouse_button_ = event->button() == Qt::LeftButton;
@@ -230,10 +222,19 @@ void OGLview::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void OGLview::mouseMoveEvent(QMouseEvent *event) {
-  mouse_now_ = event->pos() - mouse_now_;
-  if ((mouse_now_.x() != 0 || mouse_now_.y() != 0) && left_mouse_button_)
-    MoveModelByMouse(mouse_now_);
-  mouse_now_ = event->pos();
+  QVector2D diff = QVector2D(event->pos()) - mouse_now_;
+  mouse_now_ = QVector2D(event->pos());
+
+  float length = diff.length() / 2;
+
+  QVector3D axis(-diff.y(), -diff.x(), 0.0);
+
+    rotation_ = QQuaternion::fromAxisAndAngle(axis, length) * rotation_;
+    QOpenGLWidget::update();
+
+//  if ((mouse_now_.x() != 0 || mouse_now_.y() != 0) && left_mouse_button_)
+//    MoveModelByMouse(mouse_now_);
+//  mouse_now_ = event->pos();
 }
 
 void OGLview::wheelEvent(QWheelEvent *event) {

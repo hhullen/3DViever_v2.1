@@ -96,25 +96,25 @@ void MainWindow::UpdateViewSlot() {
 }
 
 void MainWindow::UpdateTransformationPanelSlot() {
-  float x, y, z;
+  QVector3D *transform;
 
-  ogl_view_->get_position(&x, &y, &z);
-  transform_panel_->set_position(&x, &y, &z);
+  transform = ogl_view_->get_position();
+  transform_panel_->set_position(*transform);
 
-  ogl_view_->get_angle(&x, &y, &z);
-  transform_panel_->set_angle(&x, &y, &z);
+  transform = ogl_view_->get_angle();
+  transform_panel_->set_angle(*transform);
 
   transform_panel_->set_scale(ogl_view_->get_scale());
 }
 
 void MainWindow::UpdateTransformationSlot() {
-  float x, y, z;
+  QVector3D transform;
 
-  transform_panel_->get_position(&x, &y, &z);
-  ogl_view_->set_position(x, y, z);
+  transform = transform_panel_->get_position();
+  ogl_view_->set_position(transform);
 
-  transform_panel_->get_angle(&x, &y, &z);
-  ogl_view_->set_angle(x, y, z);
+  transform = transform_panel_->get_angle();
+  ogl_view_->set_angle(transform);
 
   ogl_view_->set_scale(transform_panel_->get_scale());
   ogl_view_->update();
@@ -177,7 +177,7 @@ void MainWindow::OpenNewFileSlot() {
       ogl_view_->set_model_indices_vector(controller_->get_indices_vector());
       ogl_view_->set_model_facets_amount(controller_->get_facets_amount());
       ogl_view_->ShowEventMessage("Successfully loaded", 2000);
-//      ogl_view_->DrawModel();
+      ogl_view_->DrawModel();
     } else {
       ogl_view_->ShowEventMessage("Can not upload file", 3000);
       SetSteerPanelComponentsAvailability(false);

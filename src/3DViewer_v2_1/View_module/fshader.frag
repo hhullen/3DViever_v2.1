@@ -8,10 +8,10 @@ varying vec3 v_normal;
 void main(void)
 {
     vec4 result_color = vec4(0.0, 0.0, 0.0, 0.0);
-    vec4 diffuse_mat_color = texture2D(u_texture, v_texcoord);
     vec4 eye_position = vec4(0.0, 0.0, 0.0, 1.0);
+    vec4 diffuse_mat_color = texture2D(u_texture, v_texcoord);
     vec3 eye_vector = normalize(v_position.xyz - eye_position.xyz);
-    vec3 light_vector = normalize(v_position.xyz - u_light_position);
+    vec3 light_vector = normalize(v_position.xyz - u_light_position.xyz);
     vec3 reflect_light = normalize(reflect(light_vector, v_normal));
     float len = length(v_position.xyz - eye_position.xyz);
     float specular_factor = 10.0;

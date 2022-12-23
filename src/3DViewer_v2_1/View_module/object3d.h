@@ -26,6 +26,8 @@ private:
     QOpenGLBuffer vertex_buffer_;
     QOpenGLBuffer index_buffer_;
     QOpenGLTexture *texture_;
+    size_t vertexes_;
+    size_t indices_;
 
     QMatrix4x4 m_model_matrix_;
 };
