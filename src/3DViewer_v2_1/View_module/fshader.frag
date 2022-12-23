@@ -1,13 +1,14 @@
 uniform sampler2D u_texture;
 uniform vec4 u_light_position;
 uniform float u_light_power;
+uniform vec4 shadow_color;
 varying vec4 v_position;
 varying vec2 v_texcoord;
 varying vec3 v_normal;
 
 void main(void)
 {
-    vec4 result_color = vec4(0.0, 0.0, 0.0, 0.0);
+    vec4 result_color = shadow_color;
     vec4 eye_position = vec4(0.0, 0.0, 0.0, 1.0);
     vec4 diffuse_mat_color = texture2D(u_texture, v_texcoord);
     vec3 eye_vector = normalize(v_position.xyz - eye_position.xyz);

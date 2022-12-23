@@ -15,7 +15,7 @@ OGLview::OGLview(QWidget *parent)
   connect(timer_, &QTimer::timeout, this, &OGLview::ClearMessageSlot);
   update();
   texture_ = new QImage(10, 10, QImage::Format_ARGB32);
-  texture_->fill(QColor(200, 50, 100));
+  texture_->fill(QColor(100, 0, 255));
 }
 
 OGLview::~OGLview() { delete ui_; }
@@ -131,7 +131,8 @@ void OGLview::paintGL() {
       program_.setUniformValue("u_projection_matrix", m_projection_);
       program_.setUniformValue("u_view_matrix", m_view_);
       program_.setUniformValue("u_light_position", QVector4D(0.0, 0.0, 0.0, 1.0));
-      program_.setUniformValue("u_light_power", 10.0f);
+      program_.setUniformValue("u_light_power", 4.0f);
+      program_.setUniformValue("shadow_color", QVector4D(0.0, 0.0, 0.0, 1.0));
 
       object_->setup_edges(edges_size_, edges_color_, edges_style_);
       object_->setup_vertexes(vertexes_size_, vertexes_color_,vertexes_style_);

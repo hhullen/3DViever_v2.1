@@ -70,8 +70,11 @@ void Object3D::draw(QOpenGLShaderProgram *program, QOpenGLFunctions *gl_function
     index_buffer_.bind();
 
     gl_functions->glDrawElements(GL_TRIANGLES, index_buffer_.size(), GL_UNSIGNED_INT, 0);
-//    DrawVertexes(gl_functions);
-//    DrawEdges(gl_functions);
+    program->setUniformValue("u_light_power", 0.0f);
+    program->setUniformValue("shadow_color", QVector4D(vertexes_color_.redF(), vertexes_color_.greenF(), vertexes_color_.blueF(), 1.0));
+    DrawVertexes(gl_functions);
+    program->setUniformValue("shadow_color", QVector4D(edges_color_.redF(), edges_color_.greenF(), edges_color_.blueF(), 1.0));
+    DrawEdges(gl_functions);
 
     vertex_buffer_.release();
     index_buffer_.release();

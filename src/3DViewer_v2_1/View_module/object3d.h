@@ -29,8 +29,6 @@ private:
     QOpenGLBuffer vertex_buffer_;
     QOpenGLBuffer index_buffer_;
     QOpenGLTexture *texture_;
-    QOpenGLTexture *edge_texture_;
-    QOpenGLTexture *vertex_texture_;
     size_t vertexes_;
     size_t indices_;
 
