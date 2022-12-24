@@ -20,6 +20,10 @@ unsigned int ViewerController::get_indices_amount() {
   return model_->get_indices_amount();
 }
 
+unsigned int ViewerController::get_ordered_indices_amount() {
+  return model_->get_ordered_indices_amount();
+}
+
 const vector<float> *ViewerController::get_vertexes_vector() {
   return model_->get_vertexes();
 }
@@ -30,6 +34,10 @@ const vector<float> *ViewerController::get_ordered_data_vector() {
 
 const vector<unsigned int> *ViewerController::get_indices_vector() {
   return model_->get_indices();
+}
+
+const vector<unsigned int> *ViewerController::get_ordered_indices_vector() {
+  return model_->get_ordered_indices();
 }
 
 }  // namespace s21

@@ -173,9 +173,11 @@ void MainWindow::OpenNewFileSlot() {
       UpdateViewSlot();
       UpdateTransformationSlot();
       SetSteerPanelComponentsAvailability(true);
+      ogl_view_->set_model_ordered_vertexes_vector(controller_->get_ordered_data_vector());
+      ogl_view_->set_model_ordered_indices_vector(controller_->get_ordered_indices_vector());
       ogl_view_->set_model_vertexes_vector(controller_->get_vertexes_vector());
       ogl_view_->set_model_indices_vector(controller_->get_indices_vector());
-      ogl_view_->set_model_facets_amount(controller_->get_facets_amount());
+//      ogl_view_->set_model_facets_amount(controller_->get_ordered_indices_amount());
       ogl_view_->ShowEventMessage("Successfully loaded", 2000);
       ogl_view_->DrawModel();
     } else {

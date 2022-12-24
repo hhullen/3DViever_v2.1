@@ -22,7 +22,7 @@ namespace s21 {
 const unsigned int kMaxDimension = 3;
 enum Axis { X, Y, Z };
 enum class ModelState { Vert, VertTex, VertNorm, VertTexNorm, Empty };
-enum class FacetType { Triangle, Polygon };
+enum class FacetType { Triangle, Polygon, Line };
 
 class OBJModel {
  public:
@@ -34,9 +34,11 @@ class OBJModel {
   unsigned int get_vertexes_amount();
   unsigned int get_facets_amount();
   unsigned int get_indices_amount();
+  unsigned int get_ordered_indices_amount();
   const vector<float> *get_vertexes();
   const vector<float> *get_ordered_data();
   const vector<unsigned int> *get_indices();
+  const vector<unsigned int> *get_ordered_indices();
 
   static void Move(OBJModel &model, Axis axis, float offset) {
     unsigned int vertexes_values = model.get_vertexes_amount() * 3;
@@ -96,6 +98,7 @@ class OBJModel {
 
   string file_path_;
   ModelState state_;
+  size_t max_v_per_f_;
 
   void UploadCoords(vector<float> &data, const char *format,
                     unsigned int dimension);
@@ -114,6 +117,7 @@ class OBJModel {
                      unsigned int amount);
   bool IsCorrectModel();
   void FreeUnnecessary();
+  void MakeArrayIndices();
 };
 
 }  // namespace s21

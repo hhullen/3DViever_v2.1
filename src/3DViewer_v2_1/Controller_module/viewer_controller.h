@@ -14,9 +14,11 @@ class ViewerController {
   unsigned int get_vertexes_amount();
   unsigned int get_facets_amount();
   unsigned int get_indices_amount();
+  unsigned int get_ordered_indices_amount();
   const vector<float> *get_vertexes_vector();
   const vector<float> *get_ordered_data_vector();
   const vector<unsigned int> *get_indices_vector();
+  const vector<unsigned int> *get_ordered_indices_vector();
 
  private:
   OBJModel *model_;

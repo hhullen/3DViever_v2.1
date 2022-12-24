@@ -17,15 +17,20 @@ unsigned int OBJModel::get_facets_amount() { return facets_.f_amount; }
 
 unsigned int OBJModel::get_indices_amount() { return facets_.v_indices.size(); }
 
-const vector<float> *OBJModel::get_vertexes() {
-  // return &v_;
-  return &subsequence_;
+unsigned int OBJModel::get_ordered_indices_amount() {
+  return facets_.vt_indices.size();
 }
+
+const vector<float> *OBJModel::get_vertexes() { return &v_; }
 
 const vector<float> *OBJModel::get_ordered_data() { return &subsequence_; }
 
 const vector<unsigned int> *OBJModel::get_indices() {
   return &facets_.v_indices;
+}
+
+const vector<unsigned int> *OBJModel::get_ordered_indices() {
+  return &facets_.vt_indices;
 }
 
 bool OBJModel::UploadModel(const string &file_path) {
@@ -141,6 +146,9 @@ void OBJModel::ReadFacet(string &line) {
       } else {
         PushIndexes(indexes, FacetType::Polygon);
       }
+      if (max_v_per_f_ < counter) {
+        max_v_per_f_ = counter;
+      }
     }
   }
 }
@@ -196,6 +204,8 @@ void OBJModel::SetDefaultValues() {
   CleanContainer(vn_);
   CleanContainer(vt_);
   CleanContainer(v_);
+  state_ = ModelState::Empty;
+  max_v_per_f_ = 0;
 }
 
 void OBJModel::CleanContainer(vector<float> &container) {
@@ -235,20 +245,8 @@ void OBJModel::MakeDataSubsequences() {
       subsequence_.push_back(0);
     }
   }
-  size_t size = facets_.v_indices.size();
-  facets_.v_indices.clear();
-  for (size_t i = 0; i < size; i += 3) {
-    facets_.v_indices.push_back(i);
-    facets_.v_indices.push_back(i + 1);
-    facets_.v_indices.push_back(i + 2);
-    // facets_.v_indices.push_back(i + 1);
-    // facets_.v_indices.push_back(i + 2);
-    // facets_.v_indices.push_back(i + 2);
-    // facets_.v_indices.push_back(i + 1);
-    // facets_.v_indices.push_back(i + 3);
-  }
-
-  // for (auto f : subsequence_) {
+  MakeArrayIndices();
+  // for (auto f : v_) {
   //   std::cout << f << "\n";
   // }
 }
@@ -262,19 +260,42 @@ void OBJModel::PushAttribute(vector<float> &data, unsigned int iter,
 }
 
 bool OBJModel::IsCorrectModel() {
-  // std::cout << "v " << v_.size() / 3 << " vt " << vt_.size() / 2 << " vn "
-  //           << vn_.size() / 3 << " \n";
   return v_.size() > 3 && facets_.f_amount > 1;
-  // return v_.size() / 3 == vt_.size() / 2 && v_.size() / 3 == vn_.size() / 3
-  // &&
-  //        facets_.f_amount > 1;
 }
 
 void OBJModel::FreeUnnecessary() {
   CleanContainer(vt_);
   CleanContainer(vn_);
-  CleanContainer(facets_.vt_indices);
   CleanContainer(facets_.vn_indices);
+}
+
+void OBJModel::MakeArrayIndices() {
+  vector<unsigned int> temp;
+  temp.clear();
+
+  std::cout << max_v_per_f_ << " max per F\n";
+
+  if (max_v_per_f_ > 2) {
+    for (size_t i = 0; i < facets_.v_indices.size() - 2; i += 3) {
+      temp.push_back(facets_.v_indices[i]);
+      temp.push_back(facets_.v_indices[i + 1]);
+      temp.push_back(facets_.v_indices[i + 1]);
+      temp.push_back(facets_.v_indices[i + 2]);
+      temp.push_back(facets_.v_indices[i + 2]);
+      temp.push_back(facets_.v_indices[i]);
+    }
+    facets_.v_indices.clear();
+    facets_.v_indices = temp;
+  }
+  // for (auto f : facets_.v_indices) {
+  //   std::cout << f << "\n";
+  // }
+
+  size_t size = facets_.v_indices.size();
+  facets_.vt_indices.clear();
+  for (size_t i = 0; i < size; i++) {
+    facets_.vt_indices.push_back(i);
+  }
 }
 
 }  // namespace s21

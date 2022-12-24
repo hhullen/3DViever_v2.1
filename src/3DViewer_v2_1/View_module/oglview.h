@@ -53,9 +53,11 @@ class OGLview : public QOpenGLWidget,
   QVector3D *get_angle();
   float get_scale();
 
+  void set_model_ordered_vertexes_vector(const vector<float> *vector);
+  void set_model_ordered_indices_vector(const vector<unsigned int> *vector);
   void set_model_vertexes_vector(const vector<float> *vector);
   void set_model_indices_vector(const vector<unsigned int> *vector);
-  void set_model_facets_amount(unsigned int facets);
+//  void set_model_facets_amount(unsigned int facets);
 
  signals:
   void PositionUpdatedSignal();
@@ -100,7 +102,9 @@ class OGLview : public QOpenGLWidget,
   const vector<float> *vertexes_;
   const vector<float> *ordered_data_;
   const vector<unsigned int> *indices_;
-  unsigned int facets_n_;
+  const vector<unsigned int> *ordered_indices_;
+//  unsigned int facets_n_;
+//  unsigned int ordered_facets_n_;
 
     QMatrix4x4 m_projection_;
     QMatrix4x4 m_view_;

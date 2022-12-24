@@ -64,25 +64,33 @@ QVector3D *OGLview::get_angle() {
 
 float OGLview::get_scale() { return scale_; }
 
-void OGLview::set_model_vertexes_vector(const std::vector<float> *vector) {
-  vertexes_ = vector;
+void OGLview::set_model_ordered_vertexes_vector(const std::vector<float> *vector) {
+  ordered_data_ = vector;
 }
 
-void OGLview::set_model_indices_vector(
+void OGLview::set_model_ordered_indices_vector(
     const std::vector<unsigned int> *vector) {
-  indices_ = vector;
+    ordered_indices_ = vector;
 }
 
-void OGLview::set_model_facets_amount(unsigned int facets) {
-  facets_n_ = facets;
+void OGLview::set_model_vertexes_vector(const std::vector<float> *vector) {
+    vertexes_ = vector;
 }
+
+void OGLview::set_model_indices_vector(const std::vector<unsigned int> *vector) {
+    indices_ = vector;
+}
+
+//void OGLview::set_model_facets_amount(unsigned int facets) {
+//  facets_n_ = facets;
+//}
 
 void OGLview::DrawModel() {
   if (vertexes_ && indices_) {
     if (object_) {
         delete object_;
     }
-    object_ = new Object3D(*vertexes_, *indices_, *texture_);
+    object_ = new Object3D(*ordered_data_, *ordered_indices_, *vertexes_, *indices_, *texture_);
 
     new_model_loaded_ = true;
     projection_type_changed_ = true;
@@ -106,8 +114,6 @@ void OGLview::resizeGL(int w, int h) {
   window_h_ = h;
   screenRatio_ = w / float(h);
 
-//  m_projection_.setToIdentity();
-//  m_projection_.perspective(45, screenRatio_, 0.01f, 2000.0f);
   gl_func_->glViewport(0, 0, w, h);
   SetProjectionType();
 }
@@ -132,10 +138,12 @@ void OGLview::paintGL() {
       program_.setUniformValue("u_view_matrix", m_view_);
       program_.setUniformValue("u_light_position", QVector4D(0.0, 0.0, 0.0, 1.0));
       program_.setUniformValue("u_light_power", 4.0f);
-      program_.setUniformValue("shadow_color", QVector4D(0.0, 0.0, 0.0, 1.0));
+      program_.setUniformValue("shadow_color", QVector4D(0.25, 0.25, 0.25, 1.0));
+      program_.setUniformValue("shade_mode", ShadeMode::FLAT);
 
       object_->setup_edges(edges_size_, edges_color_, edges_style_);
       object_->setup_vertexes(vertexes_size_, vertexes_color_,vertexes_style_);
+      object_->set_view_mode(ViewMode::SHADEFRAME);
       object_->draw(&program_, gl_func_);
   }
 }
