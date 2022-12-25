@@ -99,7 +99,7 @@ class OBJModel {
 
   string file_path_;
   ModelState state_;
-  size_t max_v_per_f_;
+  int max_v_per_f_;
 
   void UploadCoords(vector<float> &data, const char *format,
                     unsigned int dimension);

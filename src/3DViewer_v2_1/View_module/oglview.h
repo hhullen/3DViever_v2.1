@@ -52,6 +52,9 @@ class OGLview : public QOpenGLWidget,
   QVector3D *get_position();
   QVector3D *get_angle();
   float get_scale();
+  void set_light_position(QVector3D position);
+  void set_light_power(float value);
+  void set_light_color(QColor color);
 
   void set_model_ordered_vertexes_vector(const vector<float> *vector);
   void set_model_ordered_indices_vector(const vector<unsigned int> *vector);
@@ -89,13 +92,16 @@ class OGLview : public QOpenGLWidget,
   QVector3D position_;
   QVector3D angle_;
   float scale_;
-  float start_z_position_;
   float axis_scale_;
   float screenRatio_;
   int window_w_;
   int window_h_;
   float fov_;
   float far_dist_;
+
+  QVector3D light_position_;
+  float light_power_;
+  QColor light_color_;
 
   const vector<float> *vertexes_;
   const vector<float> *ordered_data_;

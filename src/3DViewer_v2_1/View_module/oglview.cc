@@ -65,6 +65,18 @@ QVector3D *OGLview::get_angle() {
 
 float OGLview::get_scale() { return scale_; }
 
+void OGLview::set_light_position(QVector3D position) {
+    light_position_ = position;
+}
+
+void OGLview::set_light_power(float value) {
+    light_power_ = value;
+}
+
+void OGLview::set_light_color(QColor color) {
+    light_color_ = color;
+}
+
 void OGLview::set_model_ordered_vertexes_vector(const std::vector<float> *vector) {
   ordered_data_ = vector;
 }
@@ -83,7 +95,7 @@ void OGLview::set_model_indices_vector(const std::vector<unsigned int> *vector) 
 }
 
 void OGLview::DrawModel() {
-  if (vertexes_ && indices_) {
+  if (isModelLoaded()) {
     if (object_) {
         delete object_;
     }
@@ -118,7 +130,7 @@ void OGLview::paintGL() {
     gl_func_->glClearColor(background_color_.redF(), background_color_.greenF(),
                            background_color_.blueF(), 1.0f);
     gl_func_->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  if (vertexes_ && indices_) {
+  if (isModelLoaded()) {
       SetModelPosition();
       SetProjectionType();
       SetUniforms();
@@ -138,7 +150,6 @@ void OGLview::SetDefaulValues() {
   far_dist_ = 30000;
   fov_ = 30;
   axis_scale_ = 2;
-  start_z_position_ = 2;
   key_space_ = false;
   left_mouse_button_ = false;
   projection_type_changed_ = false;
@@ -156,8 +167,9 @@ void OGLview::SetUniforms() {
     program_.bind();
     program_.setUniformValue("u_projection_matrix", m_projection_);
     program_.setUniformValue("u_view_matrix", m_view_);
-    program_.setUniformValue("u_light_position", QVector4D(0.0, 0.0, 0.0, 1.0));
-    program_.setUniformValue("u_light_power", 4.0f);
+    program_.setUniformValue("u_light_position", QVector4D(light_position_, 1.0));
+    program_.setUniformValue("u_light_power", light_power_);
+    program_.setUniformValue("u_light_color", light_color_);
     program_.setUniformValue("shadow_color", QVector4D(0.25, 0.25, 0.25, 1.0));
     program_.setUniformValue("shade_mode", ShadeMode::FLAT);
 }
@@ -209,7 +221,7 @@ void OGLview::wheelEvent(QWheelEvent *event) {
     MoveModelByWheel(event->pixelDelta().y());
   else if (event->pixelDelta().y() != 0 && !key_space_)
     ScaleModelByWheel(event->pixelDelta().y());
-  if (vertexes_ && indices_) {
+  if (isModelLoaded()) {
     emit PositionUpdatedSignal();
   }
 }

@@ -15,6 +15,7 @@
 #include "ptransform.h"
 #include "screencap.h"
 #include "viewsetup.h"
+#include "lighting.h"
 using s21::OBJModel;
 using s21::ViewerController;
 
@@ -45,6 +46,7 @@ class MainWindow : public QMainWindow {
   void ManageTransformPanelSlot(bool state);
   void ManageViewSetupPanelSlot(bool state);
   void ManageScreenCapturePanelSlot(bool state);
+  void ManageLightingPanelSlot(bool state);
   void GetScreenShotSlot();
   void GetGifSlot();
   void AddGifFrame();
@@ -59,6 +61,7 @@ class MainWindow : public QMainWindow {
   PTransform *transform_panel_;
   ViewSetup *view_panel_;
   ScreenCap *screen_cap_;
+  Lighting *lighting_panel_;
 
   QString file_path_;
   QRegularExpression name_pattern_;

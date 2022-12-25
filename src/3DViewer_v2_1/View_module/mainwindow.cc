@@ -12,10 +12,12 @@ MainWindow::MainWindow(ViewerController *controller, QWidget *parent)
   transform_panel_ = new PTransform();
   view_panel_ = new ViewSetup();
   screen_cap_ = new ScreenCap();
+  lighting_panel_ = new Lighting();
   recording_ = false;
 
   view_panel_->setVisible(false);
   screen_cap_->setVisible(false);
+  lighting_panel_->setVisible(false);
 
   name_pattern_.setPattern("[^\\/]*$");
 
@@ -149,7 +151,11 @@ void MainWindow::ManageViewSetupPanelSlot(bool state) {
 }
 
 void MainWindow::ManageScreenCapturePanelSlot(bool state) {
-  screen_cap_->setVisible(state);
+    screen_cap_->setVisible(state);
+}
+
+void MainWindow::ManageLightingPanelSlot(bool state) {
+    lighting_panel_->setVisible(state);
 }
 
 void MainWindow::SteerPanelClosedSlot(bool state) {
@@ -190,6 +196,7 @@ void MainWindow::SetSteerPanelComponentsAvailability(bool state) {
   transform_panel_->setDisabled(!state);
   view_panel_->setDisabled(!state);
   screen_cap_->setDisabled(!state);
+  lighting_panel_->setDisabled(!state);
 }
 
 void MainWindow::SetModelInfo(ModelState state) {
@@ -220,6 +227,7 @@ void MainWindow::AddSteeringWidgetsToDockPanel() {
   ui_->scroll_area_contents->layout()->setSpacing(0);
   ui_->scroll_area_contents->layout()->addWidget(transform_panel_);
   ui_->scroll_area_contents->layout()->addWidget(view_panel_);
+  ui_->scroll_area_contents->layout()->addWidget(lighting_panel_);
   ui_->scroll_area_contents->layout()->addWidget(screen_cap_);
 }
 
@@ -234,6 +242,8 @@ void MainWindow::ConnectSignalSlot() {
           &MainWindow::ManageTransformPanelSlot);
   connect(ui_->action_setup_view, &QAction::triggered, this,
           &MainWindow::ManageViewSetupPanelSlot);
+  connect(ui_->actionLighting, &QAction::triggered, this,
+          &MainWindow::ManageLightingPanelSlot);
   connect(ui_->action_screen_capture, &QAction::triggered, this,
           &MainWindow::ManageScreenCapturePanelSlot);
   connect(ui_->action_open_new, &QAction::triggered, this,
