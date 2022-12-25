@@ -74,7 +74,7 @@ void PTransform::ConnectSignalSlot() {
           &PTransform::DataUpdatedSignal);
   connect(ui_->d_spin_box_scale, &QDoubleSpinBox::valueChanged, this,
           &PTransform::DataUpdatedSignal);
-  connect(ui_->btn_reset_position, SIGNAL(clicked()), this, SLOT(ResetSlot()));
+  connect(ui_->btn_reset_position, &QPushButton::clicked, this, &PTransform::ResetSlot);
 }
 
 }  // namespace S21

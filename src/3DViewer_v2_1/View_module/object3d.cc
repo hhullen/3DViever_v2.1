@@ -53,6 +53,7 @@ void Object3D::init(const vector<float> &ordered_vertex, const vector<unsigned i
 
     vertexes_ = vertex.size() / 3;
     indices_ = indices.size();
+    ordered_vertexes_ = ordered_vertex.size() / 8;
 
     texture_ = new QOpenGLTexture(texture.mirrored());
     texture_->setMinificationFilter(QOpenGLTexture::Nearest);
@@ -111,7 +112,7 @@ void Object3D::DrawPolygons(QOpenGLShaderProgram *program, QOpenGLFunctions *gl_
     ordered_index_buffer_.bind();
 
     if (view_mode_ == ViewMode::SHADE || view_mode_ == ViewMode::SHADEFRAME) {
-        gl_function->glDrawElements(GL_TRIANGLES, ordered_index_buffer_.size(), GL_UNSIGNED_INT, 0);
+        gl_function->glDrawElements(GL_TRIANGLES, ordered_vertexes_, GL_UNSIGNED_INT, nullptr);
     }
 
     ordered_vertex_buffer_.release();

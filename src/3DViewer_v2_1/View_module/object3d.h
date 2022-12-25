@@ -35,6 +35,7 @@ private:
     QOpenGLBuffer index_buffer_;
     GLsizei vertexes_;
     GLsizei indices_;
+    GLsizei ordered_vertexes_;
 
 
     QOpenGLTexture *texture_;

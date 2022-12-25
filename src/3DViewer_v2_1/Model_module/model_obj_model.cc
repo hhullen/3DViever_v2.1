@@ -246,9 +246,6 @@ void OBJModel::MakeDataSubsequences() {
     }
   }
   MakeArrayIndices();
-  // for (auto f : v_) {
-  //   std::cout << f << "\n";
-  // }
 }
 
 void OBJModel::PushAttribute(vector<float> &data, unsigned int iter,
@@ -273,8 +270,6 @@ void OBJModel::MakeArrayIndices() {
   vector<unsigned int> temp;
   temp.clear();
 
-  std::cout << max_v_per_f_ << " max per F\n";
-
   if (max_v_per_f_ > 2) {
     for (size_t i = 0; i < facets_.v_indices.size() - 2; i += 3) {
       temp.push_back(facets_.v_indices[i]);
@@ -287,13 +282,10 @@ void OBJModel::MakeArrayIndices() {
     facets_.v_indices.clear();
     facets_.v_indices = temp;
   }
-  // for (auto f : facets_.v_indices) {
-  //   std::cout << f << "\n";
-  // }
 
-  size_t size = facets_.v_indices.size();
+  size_t size = subsequence_.size() / 8;
   facets_.vt_indices.clear();
-  for (size_t i = 0; i < size; i++) {
+  for (size_t i = 0; i < size; i += 1) {
     facets_.vt_indices.push_back(i);
   }
 }

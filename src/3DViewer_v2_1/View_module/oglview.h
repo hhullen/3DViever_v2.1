@@ -57,7 +57,6 @@ class OGLview : public QOpenGLWidget,
   void set_model_ordered_indices_vector(const vector<unsigned int> *vector);
   void set_model_vertexes_vector(const vector<float> *vector);
   void set_model_indices_vector(const vector<unsigned int> *vector);
-//  void set_model_facets_amount(unsigned int facets);
 
  signals:
   void PositionUpdatedSignal();
@@ -77,7 +76,6 @@ class OGLview : public QOpenGLWidget,
   QVector2D mouse_now_;
   bool key_space_;
   bool left_mouse_button_;
-  bool new_model_loaded_;
   bool projection_type_changed_;
 
   QColor edges_color_;
@@ -103,15 +101,15 @@ class OGLview : public QOpenGLWidget,
   const vector<float> *ordered_data_;
   const vector<unsigned int> *indices_;
   const vector<unsigned int> *ordered_indices_;
-//  unsigned int facets_n_;
-//  unsigned int ordered_facets_n_;
 
     QMatrix4x4 m_projection_;
     QMatrix4x4 m_view_;
+    QMatrix4x4 m_rotation_;
     QQuaternion rotation_;
     QOpenGLShaderProgram program_;
     QImage *texture_;
     Object3D *object_;
+    bool self_changed_;
 
   void initializeGL() override;
   void resizeGL(int w, int h) override;
@@ -119,14 +117,11 @@ class OGLview : public QOpenGLWidget,
 
   void SetDefaulValues();
   void SetProjectionType();
-  void GetVertexesBuffer();
   void SetModelPosition();
-  void DrawPoints();
-  void DrawLines();
-  void MoveModelByMouse(QPoint pos);
+  void MoveModelByMouse(QVector2D pos);
   void MoveModelByWheel(int dz);
   void ScaleModelByWheel(int ds);
-  void IncreaseAngle(float *angle, float dr);
+  bool isModelLoaded();
 };
 
 }  // namespace S21
