@@ -109,6 +109,13 @@ void MainWindow::UpdateTransformationPanelSlot() {
   transform_panel_->set_scale(ogl_view_->get_scale());
 }
 
+void MainWindow::UpdateLightingSlot() {
+    ogl_view_->set_light_color(lighting_panel_->get_color());
+    ogl_view_->set_light_position(lighting_panel_->get_position());
+    ogl_view_->set_light_power(lighting_panel_->get_power());
+    ogl_view_->update();
+}
+
 void MainWindow::UpdateTransformationSlot() {
   QVector3D transform;
 
@@ -258,6 +265,7 @@ void MainWindow::ConnectSignalSlot() {
           &MainWindow::GetGifSlot);
   connect(ogl_view_, &OGLview::PositionUpdatedSignal, this,
           &MainWindow::UpdateTransformationPanelSlot);
+  connect(lighting_panel_, &Lighting::DataUpdatedSignal, this, &MainWindow::UpdateLightingSlot);
 }
 
 }  // namespace S21

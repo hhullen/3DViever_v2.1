@@ -6,6 +6,7 @@
 #include <QSettings>
 #include <QStyle>
 #include <QWidget>
+#include <QVector3D>
 
 namespace Ui {
 class Lighting;
@@ -23,9 +24,12 @@ public:
     void set_turned_on(bool state);
 
     float get_power();
-    void get_position(float *x, float *y, float *z);
+    QVector3D get_position();
     QColor get_color();
     bool IsTurnedOn();
+
+signals:
+  void DataUpdatedSignal();
 
 private:
     Ui::Lighting *ui_;

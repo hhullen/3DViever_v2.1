@@ -53,6 +53,7 @@ class MainWindow : public QMainWindow {
   void UpdateTransformationSlot();
   void UpdateViewSlot();
   void UpdateTransformationPanelSlot();
+  void UpdateLightingSlot();
 
  private:
   Ui::MainWindow *ui_;

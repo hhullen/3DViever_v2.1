@@ -172,6 +172,9 @@ void OGLview::SetUniforms() {
     program_.setUniformValue("u_light_color", light_color_);
     program_.setUniformValue("shadow_color", QVector4D(0.25, 0.25, 0.25, 1.0));
     program_.setUniformValue("shade_mode", ShadeMode::FLAT);
+    qDebug() << light_power_;
+    qDebug() << light_color_;
+    qDebug() << light_position_ << "\n";
 }
 
 void OGLview::SetProjectionType() {

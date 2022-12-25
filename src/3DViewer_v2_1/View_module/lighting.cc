@@ -12,6 +12,10 @@ Lighting::Lighting(QWidget *parent) :
 
     connect(ui_->palette_light, &QPushButton::clicked, this, &Lighting::GetNewColor);
     connect(ui_->cb_switcher, &QComboBox::currentIndexChanged, this, &Lighting::SwitchState);
+    connect(ui_->d_spin_box_power, &QDoubleSpinBox::valueChanged, this, &Lighting::DataUpdatedSignal);
+    connect(ui_->d_spin_box_x_pos, &QDoubleSpinBox::valueChanged, this, &Lighting::DataUpdatedSignal);
+    connect(ui_->d_spin_box_y_pos, &QDoubleSpinBox::valueChanged, this, &Lighting::DataUpdatedSignal);
+    connect(ui_->d_spin_box_z_pos, &QDoubleSpinBox::valueChanged, this, &Lighting::DataUpdatedSignal);
     UploadSettings();
 }
 
@@ -35,16 +39,14 @@ float Lighting::get_power() {
     return returnable;
 }
 
-void Lighting::get_position(float *x, float *y, float *z) {
-    if (x) {
-        *x = ui_->d_spin_box_x_pos->value();
-    }
-    if (y) {
-        *y = ui_->d_spin_box_y_pos->value();
-    }
-    if (z) {
-        *z = ui_->d_spin_box_z_pos->value();
-    }
+QVector3D Lighting::get_position() {
+    QVector3D returnable;
+
+    returnable.setX( ui_->d_spin_box_x_pos->value());
+    returnable.setY( ui_->d_spin_box_y_pos->value());
+    returnable.setZ( ui_->d_spin_box_z_pos->value());
+
+    return returnable;
 }
 
 QColor Lighting::get_color() {
@@ -72,6 +74,7 @@ void Lighting::GetNewColor() {
       color_ = temp;
       SetColor(color_, nullptr, ui_->palette_light);
       ShowChosenColorInfo(ui_->label_light_rgb, color_);
+      emit DataUpdatedSignal();
     }
 }
 
@@ -106,6 +109,7 @@ void Lighting::SwitchState(int index) {
     } else if (index == 1) {
         set_turned_on(true);
     }
+    emit DataUpdatedSignal();
 }
 
 void Lighting::SaveSettings() {
