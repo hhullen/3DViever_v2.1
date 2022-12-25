@@ -40,4 +40,8 @@ const vector<unsigned int> *ViewerController::get_ordered_indices_vector() {
   return model_->get_ordered_indices();
 }
 
+ModelState ViewerController::get_model_state() {
+  return model_->get_model_state();
+}
+
 }  // namespace s21

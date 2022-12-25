@@ -169,7 +169,7 @@ void MainWindow::OpenNewFileSlot() {
   if (!file_path_.isEmpty()) {
     bool is_loaded = controller_->UploadNewModel(file_path_.toStdString());
     if (is_loaded) {
-      SetModelInfo();
+      SetModelInfo(controller_->get_model_state());
       UpdateViewSlot();
       UpdateTransformationSlot();
       SetSteerPanelComponentsAvailability(true);
@@ -177,7 +177,6 @@ void MainWindow::OpenNewFileSlot() {
       ogl_view_->set_model_ordered_indices_vector(controller_->get_ordered_indices_vector());
       ogl_view_->set_model_vertexes_vector(controller_->get_vertexes_vector());
       ogl_view_->set_model_indices_vector(controller_->get_indices_vector());
-//      ogl_view_->set_model_facets_amount(controller_->get_ordered_indices_amount());
       ogl_view_->ShowEventMessage("Successfully loaded", 2000);
       ogl_view_->DrawModel();
     } else {
@@ -193,7 +192,7 @@ void MainWindow::SetSteerPanelComponentsAvailability(bool state) {
   screen_cap_->setDisabled(!state);
 }
 
-void MainWindow::SetModelInfo() {
+void MainWindow::SetModelInfo(ModelState state) {
   QString status_bar_info;
   QRegularExpressionMatch match_ = name_pattern_.match(file_path_);
 
@@ -203,6 +202,15 @@ void MainWindow::SetModelInfo() {
   status_bar_info.append(QString::number(controller_->get_vertexes_amount()));
   status_bar_info.append("  Edges: ");
   status_bar_info.append(QString::number(controller_->get_facets_amount()));
+  if (state == ModelState::Vert) {
+       status_bar_info.append("  [vertex only]");
+  } else if (state == ModelState::VertNorm) {
+      status_bar_info.append("  [vertex/normal]");
+  } else if (state == ModelState::VertTex) {
+      status_bar_info.append("  [vertex/texture]");
+  } else if (state == ModelState::VertTexNorm) {
+      status_bar_info.append("  [vertex/texture/normal]");
+  }
   ui_->statusbar->showMessage(status_bar_info);
 }
 

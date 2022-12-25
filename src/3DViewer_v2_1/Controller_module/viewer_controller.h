@@ -19,6 +19,7 @@ class ViewerController {
   const vector<float> *get_ordered_data_vector();
   const vector<unsigned int> *get_indices_vector();
   const vector<unsigned int> *get_ordered_indices_vector();
+  ModelState get_model_state();
 
  private:
   OBJModel *model_;

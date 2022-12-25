@@ -16,6 +16,7 @@ SOURCES += \
     View_module/ptransform.cc \
     View_module/viewsetup.cc \
     View_module/screencap.cc \
+    View_module/lighting.cc \
     View_module/oglview.cc \
     View_module/object3d.cc \
     giflib/dgif_lib.c \
@@ -29,6 +30,7 @@ SOURCES += \
 HEADERS += \
     Model_module/model_obj_model.h \
     Controller_module/viewer_controller.h \
+    View_module/lighting.h \
     View_module/mainwindow.h \
     View_module/ptransform.h \
     View_module/viewsetup.h \
@@ -41,6 +43,7 @@ HEADERS += \
     gifimage/qgifimage_p.h
 
 FORMS += \
+    View_module/lighting.ui \
     View_module/mainwindow.ui \
     View_module/ptransform.ui \
     View_module/viewsetup.ui \

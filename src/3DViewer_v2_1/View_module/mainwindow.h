@@ -70,7 +70,7 @@ class MainWindow : public QMainWindow {
   bool recording_;
 
   void SetSteerPanelComponentsAvailability(bool state);
-  void SetModelInfo();
+  void SetModelInfo(ModelState state);
 
   void AddSteeringWidgetsToDockPanel();
   void ConnectSignalSlot();

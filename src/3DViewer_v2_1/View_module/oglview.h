@@ -104,7 +104,6 @@ class OGLview : public QOpenGLWidget,
 
     QMatrix4x4 m_projection_;
     QMatrix4x4 m_view_;
-    QMatrix4x4 m_rotation_;
     QQuaternion rotation_;
     QOpenGLShaderProgram program_;
     QImage *texture_;
@@ -118,6 +117,7 @@ class OGLview : public QOpenGLWidget,
   void SetDefaulValues();
   void SetProjectionType();
   void SetModelPosition();
+  void SetUniforms();
   void MoveModelByMouse(QVector2D pos);
   void MoveModelByWheel(int dz);
   void ScaleModelByWheel(int ds);

@@ -51,7 +51,6 @@ void OGLview::set_position(QVector3D positions) {
 void OGLview::set_angle(QVector3D angles) {
     angle_ = angles;
     rotation_ = rotation_.fromEulerAngles(angle_);
-
 }
 
 void OGLview::set_scale(float scale) { scale_ = scale; }
@@ -122,18 +121,11 @@ void OGLview::paintGL() {
   if (vertexes_ && indices_) {
       SetModelPosition();
       SetProjectionType();
-
-      program_.bind();
-      program_.setUniformValue("u_projection_matrix", m_projection_);
-      program_.setUniformValue("u_view_matrix", m_view_);
-      program_.setUniformValue("u_light_position", QVector4D(0.0, 0.0, 0.0, 1.0));
-      program_.setUniformValue("u_light_power", 4.0f);
-      program_.setUniformValue("shadow_color", QVector4D(0.25, 0.25, 0.25, 1.0));
-      program_.setUniformValue("shade_mode", ShadeMode::FLAT);
+      SetUniforms();
 
       object_->setup_edges(edges_size_, edges_color_, edges_style_);
       object_->setup_vertexes(vertexes_size_, vertexes_color_,vertexes_style_);
-      object_->set_view_mode(ViewMode::SHADE);
+      object_->set_view_mode(ViewMode::SHADEFRAME);
       object_->draw(&program_, gl_func_);
   }
 }
@@ -155,10 +147,19 @@ void OGLview::SetDefaulValues() {
 void OGLview::SetModelPosition() {
     m_view_.setToIdentity();
     m_view_.translate(position_);
-    m_view_.translate(0,0, -5);
-
+    m_view_.translate(0,0, -10);
     m_view_.rotate(rotation_);
     m_view_.scale(scale_);
+}
+
+void OGLview::SetUniforms() {
+    program_.bind();
+    program_.setUniformValue("u_projection_matrix", m_projection_);
+    program_.setUniformValue("u_view_matrix", m_view_);
+    program_.setUniformValue("u_light_position", QVector4D(0.0, 0.0, 0.0, 1.0));
+    program_.setUniformValue("u_light_power", 4.0f);
+    program_.setUniformValue("shadow_color", QVector4D(0.25, 0.25, 0.25, 1.0));
+    program_.setUniformValue("shade_mode", ShadeMode::FLAT);
 }
 
 void OGLview::SetProjectionType() {

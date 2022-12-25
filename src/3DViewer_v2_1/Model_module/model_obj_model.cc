@@ -33,6 +33,8 @@ const vector<unsigned int> *OBJModel::get_ordered_indices() {
   return &facets_.vt_indices;
 }
 
+ModelState OBJModel::get_model_state() { return state_; }
+
 bool OBJModel::UploadModel(const string &file_path) {
   thread *v_thread = nullptr, *vt_thread = nullptr, *vn_thread = nullptr,
          *f_thread = nullptr;

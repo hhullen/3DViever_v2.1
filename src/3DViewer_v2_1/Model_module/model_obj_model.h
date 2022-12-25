@@ -39,6 +39,7 @@ class OBJModel {
   const vector<float> *get_ordered_data();
   const vector<unsigned int> *get_indices();
   const vector<unsigned int> *get_ordered_indices();
+  ModelState get_model_state();
 
   static void Move(OBJModel &model, Axis axis, float offset) {
     unsigned int vertexes_values = model.get_vertexes_amount() * 3;
