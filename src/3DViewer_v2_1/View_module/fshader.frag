@@ -14,7 +14,12 @@ void main(void)
 {
     vec4 result_color = u_shadow_color;
     vec4 eye_position = vec4(0.0, 0.0, 0.0, 1.0);
-    vec4 diffuse_mat_color = texture2D(u_texture, v_texcoord);
+
+    vec4 diffuse_mat_color = u_polygon_color;
+    if (u_is_textured == 1) {
+        diffuse_mat_color = texture2D(u_texture, v_texcoord);
+    }
+
     vec3 eye_vector = normalize(v_position.xyz - eye_position.xyz);
     vec3 light_vector = normalize(v_position.xyz - u_light_position.xyz);
     vec3 reflect_light = normalize(reflect(light_vector, v_normal));
@@ -23,7 +28,7 @@ void main(void)
     float ambient_factor = 0.1;
 
     if (u_shade_mode == 0) {
-        vec4 diffuse_color = diffuse_mat_color  * u_light_power * max(0.0, dot(v_normal, -light_vector));
+        vec4 diffuse_color = diffuse_mat_color  * u_light_power * max(0.0, dot(v_normal, -light_vector)) * ambient_factor;
         result_color += diffuse_color * u_light_color;
     } else if (u_shade_mode == 1) {
         vec4 diffuse_color = diffuse_mat_color  * u_light_power * max(0.0, dot(v_normal, -light_vector)) / (1.0 + 0.25 * pow(len, 2.0));
@@ -33,11 +38,10 @@ void main(void)
         vec4 highlight_power = vec4(1.0, 1.0, 1.0, 1.0);
         vec4 specular_color = highlight_power * u_light_power * pow(max(0.0, dot(reflect_light, -eye_vector)), specular_factor) / (1.0 + 0.25 * pow(len, 2.0));
         result_color += specular_color;
+    } else {
+        result_color += u_polygon_color;
     }
 
-    if (u_is_textured == 1) {
-        gl_FragColor = result_color;
-    } else {
-        gl_FragColor = u_polygon_color + result_color;
-    }
+     gl_FragColor = result_color;
+
 }

@@ -13,11 +13,13 @@ MainWindow::MainWindow(ViewerController *controller, QWidget *parent)
   view_panel_ = new ViewSetup();
   screen_cap_ = new ScreenCap();
   lighting_panel_ = new Lighting();
+  texturing_panel_ = new Texturing();
   recording_ = false;
 
   view_panel_->setVisible(false);
   screen_cap_->setVisible(false);
   lighting_panel_->setVisible(false);
+  texturing_panel_->setVisible(false);
 
   name_pattern_.setPattern("[^\\/]*$");
 
@@ -95,8 +97,13 @@ void MainWindow::UpdateViewSlot() {
   ogl_view_->set_projection_type(view_panel_->get_projection_type());
   ogl_view_->set_projection_state(true);
   ogl_view_->set_drawing_type(view_panel_->get_drawing_type());
-  ogl_view_->set_shading_type(view_panel_->get_shading_type());
   ogl_view_->set_polygon_color(view_panel_->get_polygon_color());
+
+  if (state_ == ModelState::VertTexNorm || state_ == ModelState::VertNorm) {
+    ogl_view_->set_shading_type(view_panel_->get_shading_type());
+  } else {
+      ogl_view_->set_shading_type(ShadeMode::NOMAP);
+  }
   ogl_view_->update();
 }
 
@@ -117,6 +124,18 @@ void MainWindow::UpdateLightingSlot() {
     ogl_view_->set_light_position(lighting_panel_->get_position());
     ogl_view_->set_light_power(lighting_panel_->get_power());
     ogl_view_->update();
+}
+
+void MainWindow::UpdateTexturingSlot(bool textured) {
+    if (textured) {
+        ogl_view_->set_textured(texturing_panel_->get_texture());
+    } else {
+        ogl_view_->set_untextured();
+    }
+}
+
+void MainWindow::TexturingPanelMessage(QString message) {
+    ogl_view_->ShowEventMessage(message, 3000);
 }
 
 void MainWindow::UpdateTransformationSlot() {
@@ -168,6 +187,10 @@ void MainWindow::ManageLightingPanelSlot(bool state) {
     lighting_panel_->setVisible(state);
 }
 
+void MainWindow::ManageTexturingPanelSlot(bool state) {
+    texturing_panel_->setVisible(state);
+}
+
 void MainWindow::SteerPanelClosedSlot(bool state) {
   ui_->actionSteer_panel->setChecked(state);
 }
@@ -189,10 +212,12 @@ void MainWindow::OpenNewFileSlot() {
   if (!file_path_.isEmpty()) {
     bool is_loaded = controller_->UploadNewModel(file_path_.toStdString());
     if (is_loaded) {
-      SetModelInfo(controller_->get_model_state());
+      texturing_panel_->set_untextured();
+      SetSteerPanelComponentsAvailability(true);
+      state_ = controller_->get_model_state();
+      SetModelInfo(state_);
       UpdateViewSlot();
       UpdateTransformationSlot();
-      SetSteerPanelComponentsAvailability(true);
       ogl_view_->set_model_ordered_vertexes_vector(controller_->get_ordered_data_vector());
       ogl_view_->set_model_ordered_indices_vector(controller_->get_ordered_indices_vector());
       ogl_view_->set_model_vertexes_vector(controller_->get_vertexes_vector());
@@ -211,6 +236,7 @@ void MainWindow::SetSteerPanelComponentsAvailability(bool state) {
   view_panel_->setDisabled(!state);
   screen_cap_->setDisabled(!state);
   lighting_panel_->setDisabled(!state);
+  texturing_panel_->setDisabled(!state);
 }
 
 void MainWindow::SetModelInfo(ModelState state) {
@@ -225,12 +251,16 @@ void MainWindow::SetModelInfo(ModelState state) {
   status_bar_info.append(QString::number(controller_->get_facets_amount()));
   if (state == ModelState::Vert) {
        status_bar_info.append("  [vertex only]");
+       texturing_panel_->setDisabled(true);
   } else if (state == ModelState::VertNorm) {
       status_bar_info.append("  [vertex/normal]");
+      texturing_panel_->setDisabled(true);
   } else if (state == ModelState::VertTex) {
       status_bar_info.append("  [vertex/texture]");
+      texturing_panel_->setDisabled(false);
   } else if (state == ModelState::VertTexNorm) {
       status_bar_info.append("  [vertex/texture/normal]");
+      texturing_panel_->setDisabled(false);
   }
   ui_->statusbar->showMessage(status_bar_info);
 }
@@ -242,6 +272,7 @@ void MainWindow::AddSteeringWidgetsToDockPanel() {
   ui_->scroll_area_contents->layout()->addWidget(transform_panel_);
   ui_->scroll_area_contents->layout()->addWidget(view_panel_);
   ui_->scroll_area_contents->layout()->addWidget(lighting_panel_);
+  ui_->scroll_area_contents->layout()->addWidget(texturing_panel_);
   ui_->scroll_area_contents->layout()->addWidget(screen_cap_);
 }
 
@@ -258,6 +289,8 @@ void MainWindow::ConnectSignalSlot() {
           &MainWindow::ManageViewSetupPanelSlot);
   connect(ui_->actionLighting, &QAction::triggered, this,
           &MainWindow::ManageLightingPanelSlot);
+  connect(ui_->actionTexturing, &QAction::triggered, this,
+          &MainWindow::ManageTexturingPanelSlot);
   connect(ui_->action_screen_capture, &QAction::triggered, this,
           &MainWindow::ManageScreenCapturePanelSlot);
   connect(ui_->action_open_new, &QAction::triggered, this,
@@ -272,7 +305,12 @@ void MainWindow::ConnectSignalSlot() {
           &MainWindow::GetGifSlot);
   connect(ogl_view_, &OGLview::PositionUpdatedSignal, this,
           &MainWindow::UpdateTransformationPanelSlot);
-  connect(lighting_panel_, &Lighting::DataUpdatedSignal, this, &MainWindow::UpdateLightingSlot);
+  connect(lighting_panel_, &Lighting::DataUpdatedSignal, this,
+          &MainWindow::UpdateLightingSlot);
+  connect(texturing_panel_, &Texturing::DataUpdatedSignal, this,
+          &MainWindow::UpdateTexturingSlot);
+  connect(texturing_panel_, &Texturing::SentMessageSignal, this,
+          &MainWindow::TexturingPanelMessage);
 }
 
 }  // namespace S21

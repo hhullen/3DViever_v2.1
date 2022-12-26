@@ -6,7 +6,7 @@ namespace s21 {
 enum  ProjectionType { ORTHOGONAL, PERSPECTIVE };
 enum  EdgeStyle { SOLID, STIPPLE };
 enum  VertexStyle { ROUND, SQUARE, NONE };
-enum  ShadeMode { FLAT, SMOOTH };
+enum  ShadeMode { FLAT, SMOOTH, NOMAP };
 enum ScreenshotFile { BMP, JPEG };
 enum ViewMode { WIREFRAME, SHADE, SHADEFRAME };
 

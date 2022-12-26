@@ -5,7 +5,7 @@
 namespace s21 {
 
 OGLview::OGLview(QWidget *parent)
-    : QOpenGLWidget(parent), ui_(new Ui::OGLview), texture_(nullptr), object_(nullptr) {
+    : QOpenGLWidget(parent), ui_(new Ui::OGLview), object_(nullptr) {
   ui_->setupUi(this);
   new_cursor_.setShape(Qt::OpenHandCursor);
   setCursor(new_cursor_);
@@ -13,6 +13,8 @@ OGLview::OGLview(QWidget *parent)
 
   timer_ = new QTimer(this);
   connect(timer_, &QTimer::timeout, this, &OGLview::ClearMessageSlot);
+  texture_ = QImage(10, 10, QImage::Format_ARGB32);
+  texture_.fill(QColor(63, 63, 63));
   update();
 }
 
@@ -85,6 +87,25 @@ void OGLview::set_light_power(float value) {
 
 void OGLview::set_light_color(QColor color) {
     light_color_ = color;
+}
+
+void OGLview::set_textured(QImage texture) {
+    texture_ = texture;
+    is_textured_ = true;
+    if (object_) {
+        object_->set_texture(texture_);
+    }
+    QOpenGLWidget::update();
+}
+
+void OGLview::set_untextured() {
+    texture_ = QImage(10, 10, QImage::Format_ARGB32);
+    texture_.fill(QColor(63, 63, 63));
+    if (object_) {
+        object_->set_texture(texture_);
+    }
+    is_textured_ = false;
+    QOpenGLWidget::update();
 }
 
 void OGLview::set_model_ordered_vertexes_vector(const std::vector<float> *vector) {

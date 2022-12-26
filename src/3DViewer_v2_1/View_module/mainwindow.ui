@@ -69,6 +69,7 @@
     <addaction name="action_transform"/>
     <addaction name="action_setup_view"/>
     <addaction name="actionLighting"/>
+    <addaction name="actionTexturing"/>
     <addaction name="action_screen_capture"/>
    </widget>
    <addaction name="menu_file"/>
@@ -231,7 +232,7 @@
     <string>Screen capture</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+4</string>
+    <string>Ctrl+5</string>
    </property>
   </action>
   <action name="actionLighting">
@@ -243,6 +244,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+3</string>
+   </property>
+  </action>
+  <action name="actionTexturing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Texturing</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+4</string>
    </property>
   </action>
  </widget>

@@ -58,6 +58,8 @@ class OGLview : public QOpenGLWidget,
   void set_light_position(QVector3D position);
   void set_light_power(float value);
   void set_light_color(QColor color);
+  void set_textured(QImage texture);
+  void set_untextured();
 
   void set_model_ordered_vertexes_vector(const vector<float> *vector);
   void set_model_ordered_indices_vector(const vector<unsigned int> *vector);

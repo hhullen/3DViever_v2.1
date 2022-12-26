@@ -158,8 +158,6 @@ void ViewSetup::SaveSettings() {
                       ui_->cb_projection_style->currentIndex());
   settings_->setValue("drawing_type",
                       ui_->cb_drawing_type->currentIndex());
-  settings_->setValue("shading_type",
-                      ui_->cb_shading_type->currentIndex());
   settings_->setValue("edge_style", ui_->cb_edge_style->currentIndex());
   settings_->setValue("vertex_style", ui_->cb_vertex_style->currentIndex());
   settings_->setValue("background_color", background_color_);
@@ -179,7 +177,6 @@ void ViewSetup::UploadSettings() {
       settings_->value("vertex_style").toInt());
   ui_->cb_drawing_type->setCurrentIndex(settings_->value("drawing_type").toInt());
   ManageDrawingDependenciesSlot(settings_->value("drawing_type").toInt());
-  ui_->cb_shading_type->setCurrentIndex(settings_->value("shading_type").toInt());
 
   temp = settings_->value("background_color");
   SetColor(temp.value<QColor>(), &background_color_, ui_->palette_background);

@@ -16,6 +16,8 @@
 #include "screencap.h"
 #include "viewsetup.h"
 #include "lighting.h"
+#include "texturing.h"
+
 using s21::OBJModel;
 using s21::ViewerController;
 
@@ -47,6 +49,7 @@ class MainWindow : public QMainWindow {
   void ManageViewSetupPanelSlot(bool state);
   void ManageScreenCapturePanelSlot(bool state);
   void ManageLightingPanelSlot(bool state);
+  void ManageTexturingPanelSlot(bool state);
   void GetScreenShotSlot();
   void GetGifSlot();
   void AddGifFrame();
@@ -54,6 +57,8 @@ class MainWindow : public QMainWindow {
   void UpdateViewSlot();
   void UpdateTransformationPanelSlot();
   void UpdateLightingSlot();
+  void UpdateTexturingSlot(bool textured);
+  void TexturingPanelMessage(QString message);
 
  private:
   Ui::MainWindow *ui_;
@@ -63,6 +68,8 @@ class MainWindow : public QMainWindow {
   ViewSetup *view_panel_;
   ScreenCap *screen_cap_;
   Lighting *lighting_panel_;
+  Texturing *texturing_panel_;
+  ModelState state_;
 
   QString file_path_;
   QRegularExpression name_pattern_;

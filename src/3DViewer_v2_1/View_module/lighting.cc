@@ -67,7 +67,7 @@ void Lighting::SetDisabled(bool state) {
 
 void Lighting::GetNewColor() {
     QColor temp =
-        QColorDialog::getColor(color_, this, "Select edges color",
+        QColorDialog::getColor(color_, this, "Select light color",
                                QColorDialog::ColorDialogOption::ShowAlphaChannel);
 
     if (temp.isValid()) {
