@@ -9,6 +9,7 @@ CONFIG += c++17 c11
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    View_module/texturing.cc \
     main.cc \
     Model_module/model_obj_model.cc \
     Controller_module/viewer_controller.cc \
@@ -33,6 +34,7 @@ HEADERS += \
     View_module/lighting.h \
     View_module/mainwindow.h \
     View_module/ptransform.h \
+    View_module/texturing.h \
     View_module/viewsetup.h \
     View_module/screencap.h \
     View_module/enum_parameters.h \
@@ -46,6 +48,7 @@ FORMS += \
     View_module/lighting.ui \
     View_module/mainwindow.ui \
     View_module/ptransform.ui \
+    View_module/texturing.ui \
     View_module/viewsetup.ui \
     View_module/screencap.ui \
     View_module/oglview.ui

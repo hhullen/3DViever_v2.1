@@ -27,6 +27,7 @@ public:
     void setup_vertexes(int size, QColor color, VertexStyle style);
     void setup_edges(int size, QColor color, EdgeStyle style);
     void set_view_mode(ViewMode mode);
+    void set_texture(const QImage &texture);
 
 private:
     QOpenGLBuffer ordered_vertex_buffer_;

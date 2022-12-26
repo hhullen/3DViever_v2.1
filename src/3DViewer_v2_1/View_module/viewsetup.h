@@ -29,15 +29,20 @@ class ViewSetup : public QWidget {
   QColor get_vertex_color();
   int get_vertex_size();
   QColor get_background_color();
+  QColor get_polygon_color();
+  ViewMode get_drawing_type();
+  ShadeMode get_shading_type();
 
  signals:
   void DataUpdatedSignal();
 
  private slots:
   void ManageVertexStyleDependenciesSlot(int index);
+  void ManageDrawingDependenciesSlot(int index);
   void ChooseEdgeColorSlot();
   void ChooseVertexColorSlot();
   void ChooseBackgroundColorSlot();
+  void ChoosePolygonColorSlot();
   void ResetSlot();
 
  private:
@@ -47,11 +52,12 @@ class ViewSetup : public QWidget {
   QColor vertex_color_;
   QColor background_color_;
   QColor edge_color_;
+  QColor polygon_color_;
   bool first_launch_;
 
   void SetColor(QColor color, QColor *var, QPushButton *btn);
   QColor GetNewColor(QPushButton *btn, QLabel *txt, QColor col);
-  void ShowChosenColorInfo(QPushButton *btn, QLabel *txt, QColor col);
+  void ShowChosenColorInfo(QLabel *txt, QColor col);
   void SaveSettings();
   void UploadSettings();
   void ConnectSignalSlot();

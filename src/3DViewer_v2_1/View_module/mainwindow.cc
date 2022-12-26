@@ -94,6 +94,9 @@ void MainWindow::UpdateViewSlot() {
   ogl_view_->set_vertexes_style(view_panel_->get_vertex_style());
   ogl_view_->set_projection_type(view_panel_->get_projection_type());
   ogl_view_->set_projection_state(true);
+  ogl_view_->set_drawing_type(view_panel_->get_drawing_type());
+  ogl_view_->set_shading_type(view_panel_->get_shading_type());
+  ogl_view_->set_polygon_color(view_panel_->get_polygon_color());
   ogl_view_->update();
 }
 
@@ -174,7 +177,11 @@ void MainWindow::ManageSteerPanelSlot(bool state) {
   ui_->dock_widget->setFloating(false);
 }
 
-void MainWindow::CloseAppSlot(bool state) { QApplication::quit(); }
+void MainWindow::CloseAppSlot(bool state) {
+    if (!state) {
+        QApplication::quit();
+    }
+}
 
 void MainWindow::OpenNewFileSlot() {
   file_path_ = QFileDialog::getOpenFileName(this, "Open .obj file", "/Users",

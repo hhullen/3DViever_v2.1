@@ -40,7 +40,10 @@ class OGLview : public QOpenGLWidget,
   void set_edges_color(QColor color);
   void set_vertexes_color(QColor color);
   void set_background_color(QColor color);
+  void set_polygon_color(QColor color);
   void set_projection_type(ProjectionType type);
+  void set_shading_type(ShadeMode type);
+  void set_drawing_type(ViewMode type);
   void set_edges_style(EdgeStyle style);
   void set_vertexes_style(VertexStyle style);
   void set_edges_size(int size);
@@ -84,7 +87,10 @@ class OGLview : public QOpenGLWidget,
   QColor edges_color_;
   QColor vertexes_color_;
   QColor background_color_;
+  QColor polygon_color_;
   ProjectionType projection_type_;
+  ViewMode drawing_type_;
+  ShadeMode shading_type_;
   EdgeStyle edges_style_;
   VertexStyle vertexes_style_;
   int edges_size_;
@@ -112,9 +118,9 @@ class OGLview : public QOpenGLWidget,
     QMatrix4x4 m_view_;
     QQuaternion rotation_;
     QOpenGLShaderProgram program_;
-    QImage *texture_;
+    QImage texture_;
+    bool is_textured_;
     Object3D *object_;
-    bool self_changed_;
 
   void initializeGL() override;
   void resizeGL(int w, int h) override;

@@ -90,6 +90,17 @@ void Object3D::set_view_mode(ViewMode mode) {
     view_mode_ = mode;
 }
 
+void Object3D::set_texture(const QImage &texture) {
+    if (texture_ && texture_->isCreated()) {
+        texture_->destroy();
+        delete texture_;
+    }
+    texture_ = new QOpenGLTexture(texture.mirrored());
+    texture_->setMinificationFilter(QOpenGLTexture::Nearest);
+    texture_->setMagnificationFilter(QOpenGLTexture::Linear);
+    texture_->setWrapMode(QOpenGLTexture::Repeat);
+}
+
 void Object3D::DrawPolygons(QOpenGLShaderProgram *program, QOpenGLFunctions *gl_function) {
     ordered_vertex_buffer_.bind();
 
@@ -121,7 +132,8 @@ void Object3D::DrawPolygons(QOpenGLShaderProgram *program, QOpenGLFunctions *gl_
 
 void Object3D::DrawVertexes(QOpenGLShaderProgram *program, QOpenGLFunctions *gl_function) {
     program->setUniformValue("u_light_power", 0.0f);
-    program->setUniformValue("shadow_color", QVector4D(vertexes_color_.redF(), vertexes_color_.greenF(), vertexes_color_.blueF(), 1.0));
+    program->setUniformValue("u_shadow_color", QVector4D(vertexes_color_.redF(), vertexes_color_.greenF(), vertexes_color_.blueF(), 1.0));
+    program->setUniformValue("u_polygon_color", vertexes_color_);
 
     vertex_buffer_.bind();
 
@@ -143,7 +155,8 @@ void Object3D::DrawVertexes(QOpenGLShaderProgram *program, QOpenGLFunctions *gl_
 
 void Object3D::DrawEdges(QOpenGLShaderProgram *program, QOpenGLFunctions *gl_function) {
     program->setUniformValue("u_light_power", 0.0f);
-    program->setUniformValue("shadow_color", QVector4D(edges_color_.redF(), edges_color_.greenF(), edges_color_.blueF(), 1.0));
+    program->setUniformValue("u_shadow_color", QVector4D(edges_color_.redF(), edges_color_.greenF(), edges_color_.blueF(), 1.0));
+    program->setUniformValue("u_polygon_color", edges_color_);
 
     vertex_buffer_.bind();
 

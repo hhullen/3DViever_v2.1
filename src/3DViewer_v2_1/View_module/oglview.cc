@@ -5,7 +5,7 @@
 namespace s21 {
 
 OGLview::OGLview(QWidget *parent)
-    : QOpenGLWidget(parent), ui_(new Ui::OGLview), texture_(nullptr), object_(nullptr), self_changed_(false) {
+    : QOpenGLWidget(parent), ui_(new Ui::OGLview), texture_(nullptr), object_(nullptr) {
   ui_->setupUi(this);
   new_cursor_.setShape(Qt::OpenHandCursor);
   setCursor(new_cursor_);
@@ -14,8 +14,6 @@ OGLview::OGLview(QWidget *parent)
   timer_ = new QTimer(this);
   connect(timer_, &QTimer::timeout, this, &OGLview::ClearMessageSlot);
   update();
-  texture_ = new QImage(10, 10, QImage::Format_ARGB32);
-  texture_->fill(QColor(100, 0, 255));
 }
 
 OGLview::~OGLview() { delete ui_; }
@@ -32,8 +30,20 @@ void OGLview::set_vertexes_color(QColor color) { vertexes_color_ = color; }
 
 void OGLview::set_background_color(QColor color) { background_color_ = color; }
 
+void OGLview::set_polygon_color(QColor color) {
+    polygon_color_ = color;
+}
+
 void OGLview::set_projection_type(ProjectionType type) {
-  projection_type_ = type;
+    projection_type_ = type;
+}
+
+void OGLview::set_shading_type(ShadeMode type) {
+    shading_type_ = type;
+}
+
+void OGLview::set_drawing_type(ViewMode type) {
+    drawing_type_ = type;
 }
 
 void OGLview::set_edges_style(EdgeStyle style) { edges_style_ = style; }
@@ -99,7 +109,7 @@ void OGLview::DrawModel() {
     if (object_) {
         delete object_;
     }
-    object_ = new Object3D(*ordered_data_, *ordered_indices_, *vertexes_, *indices_, *texture_);
+    object_ = new Object3D(*ordered_data_, *ordered_indices_, *vertexes_, *indices_, texture_);
 
     projection_type_changed_ = true;
     QOpenGLWidget::update();
@@ -137,7 +147,7 @@ void OGLview::paintGL() {
 
       object_->setup_edges(edges_size_, edges_color_, edges_style_);
       object_->setup_vertexes(vertexes_size_, vertexes_color_,vertexes_style_);
-      object_->set_view_mode(ViewMode::SHADEFRAME);
+      object_->set_view_mode(drawing_type_);
       object_->draw(&program_, gl_func_);
   }
 }
@@ -153,6 +163,7 @@ void OGLview::SetDefaulValues() {
   key_space_ = false;
   left_mouse_button_ = false;
   projection_type_changed_ = false;
+  is_textured_ = false;
 }
 
 void OGLview::SetModelPosition() {
@@ -170,11 +181,10 @@ void OGLview::SetUniforms() {
     program_.setUniformValue("u_light_position", QVector4D(light_position_, 1.0));
     program_.setUniformValue("u_light_power", light_power_);
     program_.setUniformValue("u_light_color", light_color_);
-    program_.setUniformValue("shadow_color", QVector4D(0.25, 0.25, 0.25, 1.0));
-    program_.setUniformValue("shade_mode", ShadeMode::FLAT);
-    qDebug() << light_power_;
-    qDebug() << light_color_;
-    qDebug() << light_position_ << "\n";
+    program_.setUniformValue("u_shadow_color", QVector4D(0.25, 0.25, 0.25, 1.0));
+    program_.setUniformValue("u_shade_mode", shading_type_);
+    program_.setUniformValue("u_polygon_color", polygon_color_);
+    program_.setUniformValue("u_is_textured", is_textured_);
 }
 
 void OGLview::SetProjectionType() {

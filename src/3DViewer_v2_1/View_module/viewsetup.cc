@@ -8,6 +8,7 @@ ViewSetup::ViewSetup(QWidget *parent)
     : QWidget(parent), ui_(new Ui::ViewSetup) {
   ui_->setupUi(this);
   settings_ = new QSettings("ViewSetup", "ViewSettings", this);
+  ui_->cb_shading_type->setDisabled(true);
   ConnectSignalSlot();
   UploadSettings();
 }
@@ -39,6 +40,18 @@ int ViewSetup::get_vertex_size() { return ui_->hs_vertex_size->value(); }
 
 QColor ViewSetup::get_background_color() { return background_color_; }
 
+QColor ViewSetup::get_polygon_color() {
+    return polygon_color_;
+}
+
+ViewMode ViewSetup::get_drawing_type() {
+    return (ViewMode)ui_->cb_drawing_type->currentIndex();
+}
+
+ShadeMode ViewSetup::get_shading_type() {
+    return (ShadeMode)ui_->cb_shading_type->currentIndex();
+}
+
 void ViewSetup::ManageVertexStyleDependenciesSlot(int index) {
   if (index == VertexStyle::ROUND) {
     ui_->palette_vertex->setDisabled(false);
@@ -51,6 +64,15 @@ void ViewSetup::ManageVertexStyleDependenciesSlot(int index) {
     ui_->hs_vertex_size->setDisabled(true);
   }
   emit DataUpdatedSignal();
+}
+
+void ViewSetup::ManageDrawingDependenciesSlot(int index) {
+    if (index == 0) {
+        ui_->cb_shading_type->setDisabled(true);
+    } else if (index > 0 && index <= 2) {
+        ui_->cb_shading_type->setDisabled(false);
+    }
+    emit DataUpdatedSignal();
 }
 
 void ViewSetup::ChooseEdgeColorSlot() {
@@ -71,6 +93,12 @@ void ViewSetup::ChooseBackgroundColorSlot() {
   emit DataUpdatedSignal();
 }
 
+void ViewSetup::ChoosePolygonColorSlot() {
+  polygon_color_ = GetNewColor(ui_->palette_polygon,
+                                  ui_->label_polygon_rgb, polygon_color_);
+  emit DataUpdatedSignal();
+}
+
 void ViewSetup::ResetSlot() {
   SetColor(QColor(0, 0, 0, 255), &vertex_color_, ui_->palette_vertex);
   SetColor(QColor(255, 255, 255, 255), &background_color_,
@@ -81,6 +109,8 @@ void ViewSetup::ResetSlot() {
   ui_->cb_projection_style->setCurrentIndex(ProjectionType::ORTHOGONAL);
   ui_->cb_vertex_style->setCurrentIndex(VertexStyle::ROUND);
   ui_->cb_edge_style->setCurrentIndex(EdgeStyle::SOLID);
+  ui_->cb_drawing_type->setCurrentIndex(ViewMode::WIREFRAME);
+  ui_->cb_shading_type->setCurrentIndex(ShadeMode::FLAT);
   emit DataUpdatedSignal();
 }
 
@@ -111,13 +141,13 @@ QColor ViewSetup::GetNewColor(QPushButton *btn, QLabel *txt, QColor col) {
   if (temp.isValid()) {
     col = temp;
     SetColor(col, nullptr, btn);
-    ShowChosenColorInfo(btn, txt, col);
+    ShowChosenColorInfo(txt, col);
   }
 
   return col;
 }
 
-void ViewSetup::ShowChosenColorInfo(QPushButton *btn, QLabel *txt, QColor col) {
+void ViewSetup::ShowChosenColorInfo(QLabel *txt, QColor col) {
   txt->setText("R: " + QString::number(col.red()) +
                " G: " + QString::number(col.green()) +
                " B: " + QString::number(col.blue()));
@@ -126,11 +156,16 @@ void ViewSetup::ShowChosenColorInfo(QPushButton *btn, QLabel *txt, QColor col) {
 void ViewSetup::SaveSettings() {
   settings_->setValue("projection_type",
                       ui_->cb_projection_style->currentIndex());
+  settings_->setValue("drawing_type",
+                      ui_->cb_drawing_type->currentIndex());
+  settings_->setValue("shading_type",
+                      ui_->cb_shading_type->currentIndex());
   settings_->setValue("edge_style", ui_->cb_edge_style->currentIndex());
   settings_->setValue("vertex_style", ui_->cb_vertex_style->currentIndex());
   settings_->setValue("background_color", background_color_);
   settings_->setValue("vertexes_color", vertex_color_);
   settings_->setValue("edges_color", edge_color_);
+  settings_->setValue("polygon_color", polygon_color_);
   settings_->setValue("edge_size", ui_->hs_edge_size->value());
   settings_->setValue("vertex_size", ui_->hs_vertex_size->value());
 }
@@ -142,18 +177,25 @@ void ViewSetup::UploadSettings() {
   ui_->cb_edge_style->setCurrentIndex(settings_->value("edge_style").toInt());
   ui_->cb_vertex_style->setCurrentIndex(
       settings_->value("vertex_style").toInt());
+  ui_->cb_drawing_type->setCurrentIndex(settings_->value("drawing_type").toInt());
+  ManageDrawingDependenciesSlot(settings_->value("drawing_type").toInt());
+  ui_->cb_shading_type->setCurrentIndex(settings_->value("shading_type").toInt());
 
   temp = settings_->value("background_color");
   SetColor(temp.value<QColor>(), &background_color_, ui_->palette_background);
-  ShowChosenColorInfo(ui_->palette_background, ui_->label_background_rgb,
+  ShowChosenColorInfo(ui_->label_background_rgb,
                       background_color_);
   temp = settings_->value("vertexes_color");
   SetColor(temp.value<QColor>(), &vertex_color_, ui_->palette_vertex);
-  ShowChosenColorInfo(ui_->palette_vertex, ui_->label_vertex_rgb,
+  ShowChosenColorInfo(ui_->label_vertex_rgb,
                       vertex_color_);
   temp = settings_->value("edges_color");
   SetColor(temp.value<QColor>(), &edge_color_, ui_->palette_edge);
-  ShowChosenColorInfo(ui_->palette_edge, ui_->label_edge_rgb, edge_color_);
+  ShowChosenColorInfo(ui_->label_edge_rgb, edge_color_);
+
+  temp = settings_->value("polygon_color");
+  SetColor(temp.value<QColor>(), &polygon_color_, ui_->palette_polygon);
+  ShowChosenColorInfo(ui_->label_polygon_rgb, polygon_color_);
 
   ui_->hs_edge_size->setValue(settings_->value("edge_size").toInt());
   ui_->hs_vertex_size->setValue(settings_->value("vertex_size").toInt());
@@ -169,12 +211,18 @@ void ViewSetup::ConnectSignalSlot() {
           &ViewSetup::DataUpdatedSignal);
   connect(ui_->cb_vertex_style, &QComboBox::activated, this,
           &ViewSetup::ManageVertexStyleDependenciesSlot);
+  connect(ui_->cb_drawing_type, &QComboBox::activated, this,
+          &ViewSetup::ManageDrawingDependenciesSlot);
+  connect(ui_->cb_shading_type, &QComboBox::activated, this,
+          &ViewSetup::DataUpdatedSignal);
   connect(ui_->palette_edge, &QPushButton::clicked, this,
           &ViewSetup::ChooseEdgeColorSlot);
   connect(ui_->palette_vertex, &QPushButton::clicked, this,
           &ViewSetup::ChooseVertexColorSlot);
   connect(ui_->palette_background, &QPushButton::clicked, this,
           &ViewSetup::ChooseBackgroundColorSlot);
+  connect(ui_->palette_polygon, &QPushButton::clicked, this,
+          &ViewSetup::ChoosePolygonColorSlot);
   connect(ui_->hs_edge_size, &QSlider::sliderMoved, this,
           &ViewSetup::DataUpdatedSignal);
   connect(ui_->hs_vertex_size, &QSlider::sliderMoved, this,
