@@ -14,7 +14,8 @@ MainWindow::MainWindow(ViewerController *controller, QWidget *parent)
   screen_cap_ = new ScreenCap();
   lighting_panel_ = new Lighting();
   texturing_panel_ = new Texturing();
-  recording_ = false;
+  gif_recorder_ = new Recorder(ogl_view_->get_screen_pointer(), screen_cap_);
+  screencast_recorder_ =  new Recorder(ogl_view_->get_screen_pointer(), screen_cap_);
 
   view_panel_->setVisible(false);
   screen_cap_->setVisible(false);
@@ -34,56 +35,39 @@ MainWindow::MainWindow(ViewerController *controller, QWidget *parent)
   UpdateTransformationSlot();
 }
 
-MainWindow::~MainWindow() { delete ui_; }
+MainWindow::~MainWindow() {
+    while (gif_thread_.isRunning() || screencast_thread_.isRunning()) {
+        gif_thread_.terminate();
+        screencast_thread_.terminate();
+    }
+    delete ui_;
+}
 
 void MainWindow::GetScreenShotSlot() {
-  if (!screen_cap_->get_media_path().isEmpty()) {
-    QString file_name;
-    QImage img = ogl_view_->grabFramebuffer();
-    GetMediaName(&file_name, screen_cap_->get_media_path());
-    if (screen_cap_->get_screenshot_type() == ScreenshotFile::JPEG) {
-      file_name.append(".jpeg");
-      img.save(file_name, "JPEG");
-    } else if (screen_cap_->get_screenshot_type() == ScreenshotFile::BMP) {
-      file_name.append(".bmp");
-      img.save(file_name, "BMP");
-    }
-    ogl_view_->ShowEventMessage(
-        "Screenshot saved to: " + screen_cap_->get_media_path(), 3000);
-  }
+    ogl_view_->set_recording(true);
+    ogl_view_->update();
+    gif_recorder_->TakeScreenshot(ogl_view_->grabFramebuffer());
+    ogl_view_->set_recording(false);
 }
 
 void MainWindow::GetGifSlot() {
-  if (!screen_cap_->get_media_path().isEmpty() && !recording_) {
-    file_name_ = screen_cap_->get_media_path();
-    recording_ = true;
-    miliseconds_ = 0;
-    gif_ = new QGifImage;
-    frame_ = new QImage();
-    time_ = new QTimer();
-    GetMediaName(&file_name_, screen_cap_->get_media_path());
-    file_name_.append(".gif");
-    connect(time_, &QTimer::timeout, this, &MainWindow::AddGifFrame);
-    time_->start(100);
-    ogl_view_->ShowEventMessage("Recording in progress...", 1000);
-  }
+    if (!gif_thread_.isRunning()) {
+        ogl_view_->set_recording(true);
+        ogl_view_->update();
+        gif_recorder_->moveToThread(&gif_thread_);
+        gif_thread_.start();
+    }
 }
 
-void MainWindow::AddGifFrame() {
-  *frame_ = ogl_view_->grabFramebuffer();
-  *frame_ = frame_->scaled(640, 480);
-  gif_->addFrame(*frame_, 100);
-  miliseconds_ += 100;
-  if (miliseconds_ >= 5000) {
-    time_->stop();
-    gif_->save(file_name_);
-    ogl_view_->ShowEventMessage(
-        "Gif saved to: " + screen_cap_->get_media_path(), 3000);
-    recording_ = false;
-    delete time_;
-    delete frame_;
-    delete gif_;
-  }
+void MainWindow::GetScreenCastSlot() {
+    if (!screencast_thread_.isRunning()) {
+        ogl_view_->set_recording(true);
+        ogl_view_->update();
+        screencast_recorder_->moveToThread(&screencast_thread_);
+        SetSteerPanelComponentsAvailability(false);
+        screencast_thread_.start();
+        timer_.start(30);
+    }
 }
 
 void MainWindow::UpdateViewSlot() {
@@ -134,8 +118,33 @@ void MainWindow::UpdateTexturingSlot(bool textured) {
     }
 }
 
-void MainWindow::TexturingPanelMessage(QString message) {
+void MainWindow::SentMessage(QString message) {
     ogl_view_->ShowEventMessage(message, 3000);
+}
+
+void MainWindow::ModelRotationTick() {
+    if (screencast_thread_.isRunning()) {
+        QVector3D transform;
+
+        transform = transform_panel_->get_angle();
+        transform.setY(transform.y() + 2);
+        transform_panel_->set_angle(transform);
+        ogl_view_->set_angle(transform);
+    } else {
+        timer_.stop();
+        SetSteerPanelComponentsAvailability(true);
+        screencast_thread_.terminate();
+        ogl_view_->set_recording(false);
+    }
+}
+
+void MainWindow::StopRecording() {
+    gif_thread_.terminate();
+    ogl_view_->set_recording(false);
+}
+
+const std::vector<float> *MainWindow::GetUVMapDataSlot() {
+    return controller_->get_ordered_data_vector();
 }
 
 void MainWindow::UpdateTransformationSlot() {
@@ -149,14 +158,6 @@ void MainWindow::UpdateTransformationSlot() {
 
   ogl_view_->set_scale(transform_panel_->get_scale());
   ogl_view_->update();
-}
-
-void MainWindow::GetMediaName(QString *name, QString path) {
-  QDateTime date_time;
-  name->clear();
-  name->append(path);
-  name->append("/screen" +
-               date_time.currentDateTime().toString("yyyy_MM_dd_hh_mm_ss"));
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
@@ -299,10 +300,12 @@ void MainWindow::ConnectSignalSlot() {
           &MainWindow::UpdateTransformationSlot);
   connect(view_panel_, &ViewSetup::DataUpdatedSignal, this,
           &MainWindow::UpdateViewSlot);
-  connect(screen_cap_, &ScreenCap::TakeScreenshotSignal, this,
-          &MainWindow::GetScreenShotSlot);
+  connect(screen_cap_, &ScreenCap::TakeScreenshotSignal,
+          this, &MainWindow::GetScreenShotSlot);
   connect(screen_cap_, &ScreenCap::RecordGifSignal, this,
           &MainWindow::GetGifSlot);
+  connect(screen_cap_, &ScreenCap::RecordScreencastSignal, this,
+          &MainWindow::GetScreenCastSlot);
   connect(ogl_view_, &OGLview::PositionUpdatedSignal, this,
           &MainWindow::UpdateTransformationPanelSlot);
   connect(lighting_panel_, &Lighting::DataUpdatedSignal, this,
@@ -310,7 +313,17 @@ void MainWindow::ConnectSignalSlot() {
   connect(texturing_panel_, &Texturing::DataUpdatedSignal, this,
           &MainWindow::UpdateTexturingSlot);
   connect(texturing_panel_, &Texturing::SentMessageSignal, this,
-          &MainWindow::TexturingPanelMessage);
+          &MainWindow::SentMessage);
+  connect(texturing_panel_, &Texturing::RequireUVMapData, this,
+          &MainWindow::GetUVMapDataSlot);
+
+  connect(&gif_thread_, &QThread::started, gif_recorder_, &Recorder::RecordGif);
+  connect(&screencast_thread_, &QThread::started, screencast_recorder_, &Recorder::RecordGif);
+  connect(gif_recorder_, &Recorder::FinishedSignal, this, &MainWindow::StopRecording);
+  connect(screencast_recorder_, &Recorder::FinishedSignal, &screencast_thread_, &QThread::terminate);
+  connect(gif_recorder_, &Recorder::SentMessage, ogl_view_, &OGLview::ShowEventMessage);
+  connect(screencast_recorder_, &Recorder::SentMessage, ogl_view_, &OGLview::ShowEventMessage);
+  connect(&timer_, &QTimer::timeout, this, &MainWindow::ModelRotationTick);
 }
 
 }  // namespace S21

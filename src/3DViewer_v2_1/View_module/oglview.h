@@ -32,6 +32,8 @@ class OGLview : public QOpenGLWidget,
  public:
   explicit OGLview(QWidget *parent = nullptr);
   ~OGLview();
+    QImage *get_screen_pointer();
+    void set_recording(bool state);
   void DrawModel();
   void ShowEventMessage(QString message, int delay);
   void set_key_spcace_state(bool state);
@@ -123,6 +125,8 @@ class OGLview : public QOpenGLWidget,
     QImage texture_;
     bool is_textured_;
     Object3D *object_;
+    QImage screen_;
+    bool is_recording_;
 
   void initializeGL() override;
   void resizeGL(int w, int h) override;

@@ -7,6 +7,9 @@
 #include <QStyle>
 #include <QWidget>
 #include <QVector3D>
+#include "panelfuncs.h"
+
+using s21::PanelFuncs;
 
 namespace Ui {
 class Lighting;
@@ -38,8 +41,6 @@ private:
 
     void SetDisabled(bool state);
     void GetNewColor();
-    void SetColor(QColor color, QColor *var, QPushButton *btn);
-    void ShowChosenColorInfo(QLabel *txt, QColor col);
     void SwitchState(int index);
     void SaveSettings();
     void UploadSettings();

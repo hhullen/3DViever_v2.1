@@ -27,6 +27,7 @@ class ScreenCap : public QWidget {
  signals:
   void TakeScreenshotSignal();
   void RecordGifSignal();
+  void RecordScreencastSignal();
 
  private slots:
   void ChooseDirectory();

@@ -20,6 +20,14 @@ OGLview::OGLview(QWidget *parent)
 
 OGLview::~OGLview() { delete ui_; }
 
+QImage *OGLview::get_screen_pointer() {
+    return &screen_;
+}
+
+void OGLview::set_recording(bool state) {
+    is_recording_ = state;
+}
+
 void OGLview::set_key_spcace_state(bool state) { key_space_ = state; }
 
 void OGLview::set_projection_state(bool state) {
@@ -170,6 +178,9 @@ void OGLview::paintGL() {
       object_->setup_vertexes(vertexes_size_, vertexes_color_,vertexes_style_);
       object_->set_view_mode(drawing_type_);
       object_->draw(&program_, gl_func_);
+      if (is_recording_) {
+        screen_ = grabFramebuffer();
+      }
   }
 }
 
@@ -185,6 +196,7 @@ void OGLview::SetDefaulValues() {
   left_mouse_button_ = false;
   projection_type_changed_ = false;
   is_textured_ = false;
+  is_recording_ = false;
 }
 
 void OGLview::SetModelPosition() {

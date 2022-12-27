@@ -85,6 +85,8 @@ void ScreenCap::ConnectSignalSlot() {
           &ScreenCap::TakeScreenshotSlot);
   connect(ui_->btn_record, &QPushButton::clicked, this,
           &ScreenCap::RecordGifSlot);
+  connect(ui_->btn_screencast, &QPushButton::clicked, this,
+          &ScreenCap::RecordScreencastSignal);
 }
 
 }  // namespace S21

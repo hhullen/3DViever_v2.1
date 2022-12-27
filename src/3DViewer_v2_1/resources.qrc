@@ -1,6 +1,9 @@
 <RCC>
     <qresource prefix="/icon">
         <file>Resources/photosurface.icns</file>
+        <file>Resources/screen_gif.png</file>
+        <file>Resources/screencast.png</file>
+        <file>Resources/screenshot.png</file>
     </qresource>
     <qresource prefix="/font">
         <file>Resources/microsoftsansserif.ttf</file>

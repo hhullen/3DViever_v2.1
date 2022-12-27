@@ -17,6 +17,7 @@
 #include "viewsetup.h"
 #include "lighting.h"
 #include "texturing.h"
+#include "recorder.h"
 
 using s21::OBJModel;
 using s21::ViewerController;
@@ -52,13 +53,13 @@ class MainWindow : public QMainWindow {
   void ManageTexturingPanelSlot(bool state);
   void GetScreenShotSlot();
   void GetGifSlot();
-  void AddGifFrame();
+  void GetScreenCastSlot();
   void UpdateTransformationSlot();
   void UpdateViewSlot();
   void UpdateTransformationPanelSlot();
   void UpdateLightingSlot();
   void UpdateTexturingSlot(bool textured);
-  void TexturingPanelMessage(QString message);
+  const vector<float> *GetUVMapDataSlot();
 
  private:
   Ui::MainWindow *ui_;
@@ -73,19 +74,21 @@ class MainWindow : public QMainWindow {
 
   QString file_path_;
   QRegularExpression name_pattern_;
-  QString file_name_;
-  QTimer *time_;
-  QImage *frame_;
-  QGifImage *gif_;
-  unsigned int miliseconds_;
-  bool recording_;
+  Recorder *screenshot_;
+  Recorder *gif_recorder_;
+  Recorder *screencast_recorder_;
+  QThread gif_thread_;
+  QThread screencast_thread_;
+  QTimer timer_;
 
   void SetSteerPanelComponentsAvailability(bool state);
   void SetModelInfo(ModelState state);
 
   void AddSteeringWidgetsToDockPanel();
   void ConnectSignalSlot();
-  void GetMediaName(QString *name, QString path);
+  void SentMessage(QString message);
+  void ModelRotationTick();
+  void StopRecording();
 };
 
 }  // namespace S21

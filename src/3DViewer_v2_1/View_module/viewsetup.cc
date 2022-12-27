@@ -100,10 +100,11 @@ void ViewSetup::ChoosePolygonColorSlot() {
 }
 
 void ViewSetup::ResetSlot() {
-  SetColor(QColor(0, 0, 0, 255), &vertex_color_, ui_->palette_vertex);
-  SetColor(QColor(255, 255, 255, 255), &background_color_,
+  PanelFuncs::SetColor(QColor(0, 0, 0, 255), &vertex_color_, ui_->palette_vertex);
+  PanelFuncs::SetColor(QColor(255, 255, 255, 255), &background_color_,
            ui_->palette_background);
-  SetColor(QColor(255, 23, 190, 255), &edge_color_, ui_->palette_edge);
+  PanelFuncs::SetColor(QColor(255, 23, 190, 255), &edge_color_, ui_->palette_edge);
+  PanelFuncs::SetColor(QColor(41, 26, 183, 255), &polygon_color_, ui_->palette_polygon);
   ui_->hs_edge_size->setValue(2);
   ui_->hs_vertex_size->setValue(5);
   ui_->cb_projection_style->setCurrentIndex(ProjectionType::ORTHOGONAL);
@@ -114,25 +115,6 @@ void ViewSetup::ResetSlot() {
   emit DataUpdatedSignal();
 }
 
-void ViewSetup::SetColor(QColor color, QColor *var, QPushButton *btn) {
-  if (var) {
-    *var = color;
-  }
-  btn->setStyleSheet(
-      "QPushButton {"
-      "border: 2px solid rgba(90, 90, 90, 0.6);"
-      "border-radius: 13px;"
-      "background-color: " +
-      color.name(QColor::NameFormat::HexArgb) +
-      ";"
-      "color: rgba(0, 0, 0, 0);"
-      "}\n"
-      "QPushButton:pressed {"
-      "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-      "stop: 0 #404040 stop: 1 #686868);"
-      "}");
-}
-
 QColor ViewSetup::GetNewColor(QPushButton *btn, QLabel *txt, QColor col) {
   QColor temp =
       QColorDialog::getColor(col, this, "Select edges color",
@@ -140,17 +122,11 @@ QColor ViewSetup::GetNewColor(QPushButton *btn, QLabel *txt, QColor col) {
 
   if (temp.isValid()) {
     col = temp;
-    SetColor(col, nullptr, btn);
-    ShowChosenColorInfo(txt, col);
+    PanelFuncs::SetColor(col, nullptr, btn);
+    PanelFuncs::ShowChosenColorInfo(txt, col);
   }
 
   return col;
-}
-
-void ViewSetup::ShowChosenColorInfo(QLabel *txt, QColor col) {
-  txt->setText("R: " + QString::number(col.red()) +
-               " G: " + QString::number(col.green()) +
-               " B: " + QString::number(col.blue()));
 }
 
 void ViewSetup::SaveSettings() {
@@ -179,20 +155,20 @@ void ViewSetup::UploadSettings() {
   ManageDrawingDependenciesSlot(settings_->value("drawing_type").toInt());
 
   temp = settings_->value("background_color");
-  SetColor(temp.value<QColor>(), &background_color_, ui_->palette_background);
-  ShowChosenColorInfo(ui_->label_background_rgb,
+  PanelFuncs::SetColor(temp.value<QColor>(), &background_color_, ui_->palette_background);
+  PanelFuncs::ShowChosenColorInfo(ui_->label_background_rgb,
                       background_color_);
   temp = settings_->value("vertexes_color");
-  SetColor(temp.value<QColor>(), &vertex_color_, ui_->palette_vertex);
-  ShowChosenColorInfo(ui_->label_vertex_rgb,
+  PanelFuncs::SetColor(temp.value<QColor>(), &vertex_color_, ui_->palette_vertex);
+  PanelFuncs::ShowChosenColorInfo(ui_->label_vertex_rgb,
                       vertex_color_);
   temp = settings_->value("edges_color");
-  SetColor(temp.value<QColor>(), &edge_color_, ui_->palette_edge);
-  ShowChosenColorInfo(ui_->label_edge_rgb, edge_color_);
+  PanelFuncs::SetColor(temp.value<QColor>(), &edge_color_, ui_->palette_edge);
+  PanelFuncs::ShowChosenColorInfo(ui_->label_edge_rgb, edge_color_);
 
   temp = settings_->value("polygon_color");
-  SetColor(temp.value<QColor>(), &polygon_color_, ui_->palette_polygon);
-  ShowChosenColorInfo(ui_->label_polygon_rgb, polygon_color_);
+  PanelFuncs::SetColor(temp.value<QColor>(), &polygon_color_, ui_->palette_polygon);
+  PanelFuncs::ShowChosenColorInfo(ui_->label_polygon_rgb, polygon_color_);
 
   ui_->hs_edge_size->setValue(settings_->value("edge_size").toInt());
   ui_->hs_vertex_size->setValue(settings_->value("vertex_size").toInt());

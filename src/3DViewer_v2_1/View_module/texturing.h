@@ -6,9 +6,17 @@
 #include <QRegularExpression>
 #include <QColorDialog>
 #include <QRegularExpressionMatch>
+#include <QDesktopServices>
 #include <QWidget>
+#include <QDateTime>
 #include <vector>
+#include "panelfuncs.h"
+#include <QVBoxLayout>
 
+#include <QGraphicsScene>
+#include <QGraphicsView>
+
+using s21::PanelFuncs;
 using std::vector;
 
 namespace Ui {
@@ -31,7 +39,7 @@ public:
 signals:
     void DataUpdatedSignal(bool textured);
     void SentMessageSignal(QString message);
-    vector<float> *RequireUVMapData();
+    const vector<float> *RequireUVMapData();
 
 private:
     Ui::Texturing *ui_;
@@ -40,15 +48,15 @@ private:
     QImage texture_;
     QRegularExpression name_pattern_;
     QColor color_;
-    vector<float> *data_;
+    const vector<float> *data_;
 
     void AddRemove();
     void ChooseDirectory();
     void SetPathToButtonName();
     void GetNewColor();
-    void SetColor(QColor color, QColor *var, QPushButton *btn);
-    void ShowChosenColorInfo(QLabel *txt, QColor col);
     void SaveUVMap();
+    QLineF MakeLine(size_t i, size_t shif1, size_t shift2);
+    void OpenMediaFolder();
 };
 
 }

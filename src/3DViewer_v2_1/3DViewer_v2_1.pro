@@ -9,6 +9,7 @@ CONFIG += c++17 c11
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    View_module/recorder.cc \
     View_module/texturing.cc \
     main.cc \
     Model_module/model_obj_model.cc \
@@ -31,9 +32,11 @@ SOURCES += \
 HEADERS += \
     Model_module/model_obj_model.h \
     Controller_module/viewer_controller.h \
+    View_module/panelfuncs.h \
     View_module/lighting.h \
     View_module/mainwindow.h \
     View_module/ptransform.h \
+    View_module/recorder.h \
     View_module/texturing.h \
     View_module/viewsetup.h \
     View_module/screencap.h \

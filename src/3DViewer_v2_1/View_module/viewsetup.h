@@ -6,8 +6,10 @@
 #include <QSettings>
 #include <QStyle>
 #include <QWidget>
-
+#include "panelfuncs.h"
 #include "enum_parameters.h"
+
+using s21::PanelFuncs;
 
 namespace Ui {
 class ViewSetup;
@@ -55,9 +57,7 @@ class ViewSetup : public QWidget {
   QColor polygon_color_;
   bool first_launch_;
 
-  void SetColor(QColor color, QColor *var, QPushButton *btn);
   QColor GetNewColor(QPushButton *btn, QLabel *txt, QColor col);
-  void ShowChosenColorInfo(QLabel *txt, QColor col);
   void SaveSettings();
   void UploadSettings();
   void ConnectSignalSlot();

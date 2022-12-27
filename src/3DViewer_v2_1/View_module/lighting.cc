@@ -72,35 +72,10 @@ void Lighting::GetNewColor() {
 
     if (temp.isValid()) {
       color_ = temp;
-      SetColor(color_, nullptr, ui_->palette_light);
-      ShowChosenColorInfo(ui_->label_light_rgb, color_);
+      PanelFuncs::SetColor(color_, nullptr, ui_->palette_light);
+      PanelFuncs::ShowChosenColorInfo(ui_->label_light_rgb, color_);
       emit DataUpdatedSignal();
     }
-}
-
-void Lighting::SetColor(QColor color, QColor *var, QPushButton *btn) {
-  if (var) {
-    *var = color;
-  }
-  btn->setStyleSheet(
-      "QPushButton {"
-      "border: 2px solid rgba(90, 90, 90, 0.6);"
-      "border-radius: 13px;"
-      "background-color: " +
-      color.name(QColor::NameFormat::HexArgb) +
-      ";"
-      "color: rgba(0, 0, 0, 0);"
-      "}\n"
-      "QPushButton:pressed {"
-      "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
-      "stop: 0 #404040 stop: 1 #686868);"
-      "}");
-}
-
-void Lighting::ShowChosenColorInfo(QLabel *txt, QColor col) {
-  txt->setText("R: " + QString::number(col.red()) +
-               " G: " + QString::number(col.green()) +
-               " B: " + QString::number(col.blue()));
 }
 
 void Lighting::SwitchState(int index) {
@@ -121,8 +96,8 @@ void Lighting::UploadSettings() {
   QVariant temp;
 
   temp = settings_->value("light_color");
-  SetColor(temp.value<QColor>(), &color_, ui_->palette_light);
-  ShowChosenColorInfo(ui_->label_light_rgb, color_);
+  PanelFuncs::SetColor(temp.value<QColor>(), &color_, ui_->palette_light);
+  PanelFuncs::ShowChosenColorInfo(ui_->label_light_rgb, color_);
 
   ui_->d_spin_box_power->setValue(settings_->value("light_power").toFloat());
 }
