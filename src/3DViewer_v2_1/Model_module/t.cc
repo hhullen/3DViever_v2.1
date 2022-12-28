@@ -10,7 +10,9 @@ int main() {
 
   // cout << m.UploadModel(
   //     "/opt/goinfre/hhullen/models/portal-cube/source/model.obj");
-  // cout << m.UploadModel("/opt/goinfre/hhullen/models/cube.obj");
-  cout << m.UploadModel("/opt/goinfre/hhullen/models/cube_no_vtvn.obj");
+  cout << m.UploadModel("/opt/goinfre/hhullen/models/cube.obj") << "\n\n";
+  // cout << m.UploadModel("/opt/goinfre/hhullen/models/cube_no_vtvn.obj") <<
+  // "\n";
+  OBJModel::Rotate(m, s21::Axis::X, 45);
   // m.UploadModel("/opt/goinfre/hhullen/models/Kalashnikov.obj");
 }

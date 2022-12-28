@@ -74,7 +74,6 @@ class MainWindow : public QMainWindow {
 
   QString file_path_;
   QRegularExpression name_pattern_;
-  Recorder *screenshot_;
   Recorder *gif_recorder_;
   Recorder *screencast_recorder_;
   QThread gif_thread_;

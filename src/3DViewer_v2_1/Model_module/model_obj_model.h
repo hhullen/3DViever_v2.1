@@ -3,7 +3,7 @@
 
 #include <cmath>
 #include <fstream>
-#include <iostream>  // !!!
+#include <iostream>
 #include <string>
 #include <thread>
 #include <vector>
@@ -42,7 +42,7 @@ class OBJModel {
   ModelState get_model_state();
 
   static void Move(OBJModel &model, Axis axis, float offset) {
-    unsigned int vertexes_values = model.get_vertexes_amount() * 3;
+    unsigned int vertexes_values = model.v_.size();
 
     for (unsigned int i = axis; i < vertexes_values; i += 3) {
       model.v_.at(i) += offset;
@@ -51,7 +51,8 @@ class OBJModel {
 
   static void Rotate(OBJModel &model, Axis axis, float angle) {
     unsigned int changeable_1 = 0, changeable_2 = 0;
-    unsigned int vertexes_values = model.get_vertexes_amount() * 3;
+    unsigned int vertexes_values = model.v_.size();
+    unsigned int normals_values = model.subsequence_.size() / 8 * 3;
 
     angle = angle / 180 * M_PI;
     if (axis == Axis::X) {
@@ -66,17 +67,15 @@ class OBJModel {
     }
 
     for (unsigned int i = 0; i < vertexes_values; i += 3) {
-      float temp_1 = model.v_.at(i + changeable_1);
-      float temp_2 = model.v_.at(i + changeable_2);
-
-      model.v_.at(i + changeable_1) = temp_1 * cos(angle) + temp_2 * sin(angle);
-      model.v_.at(i + changeable_2) =
-          temp_1 * -sin(angle) + temp_2 * cos(angle);
+      Rotate_vector(model.v_, i, changeable_1, changeable_2, angle);
+    }
+    for (unsigned int i = 5; i < normals_values; i += 8) {
+      Rotate_vector(model.subsequence_, i, changeable_1, changeable_2, angle);
     }
   }
 
   static void Scale(OBJModel &model, float coeff) {
-    unsigned int vertexes_values = model.get_vertexes_amount() * 3;
+    unsigned int vertexes_values = model.v_.size();
 
     for (unsigned int i = 0; i < vertexes_values; i += 1) {
       model.v_.at(i) *= coeff;
@@ -119,6 +118,16 @@ class OBJModel {
   bool IsCorrectModel();
   void FreeUnnecessary();
   void MakeArrayIndices();
+
+  static void Rotate_vector(vector<float> &vector, unsigned int i,
+                            unsigned int changeable_1,
+                            unsigned int changeable_2, unsigned int angle) {
+    float tmp_1 = vector.at(i + changeable_1);
+    float tmp_2 = vector.at(i + changeable_2);
+
+    vector.at(i + changeable_1) = tmp_1 * cos(angle) + tmp_2 * sin(angle);
+    vector.at(i + changeable_2) = tmp_1 * -sin(angle) + tmp_2 * cos(angle);
+  }
 };
 
 }  // namespace s21

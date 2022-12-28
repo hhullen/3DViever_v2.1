@@ -125,7 +125,6 @@ void MainWindow::SentMessage(QString message) {
 void MainWindow::ModelRotationTick() {
     if (screencast_thread_.isRunning()) {
         QVector3D transform;
-
         transform = transform_panel_->get_angle();
         transform.setY(transform.y() + 2);
         transform_panel_->set_angle(transform);
