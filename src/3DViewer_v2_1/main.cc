@@ -24,6 +24,7 @@ int main(int argc, char *argv[]) {
   ViewerController controller(&model);
   MainWindow view(main_font, &controller);
   view.setWindowTitle("3D viewer v2.1");
+  view.setWindowIcon(QIcon(":/icon/Resources/photosurface.icns"));
   view.show();
 
   return a.exec();

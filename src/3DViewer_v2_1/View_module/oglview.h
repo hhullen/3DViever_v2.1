@@ -4,16 +4,16 @@
 #define GL_SILENCE_DEPRECATION
 
 #include <QLabel>
-#include <QMouseEvent>
-#include <QOpenGLFunctions>
-#include <QOpenGLContext>
-#include <QOpenGLWidget>
-#include <QTimer>
-#include <QOpenGLShaderProgram>
-#include <vector>
 #include <QMatrix4x4>
+#include <QMouseEvent>
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
+#include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
+#include <QOpenGLWidget>
 #include <QQuaternion>
+#include <QTimer>
+#include <vector>
 
 #include "View_module/enum_parameters.h"
 #include "object3d.h"
@@ -25,15 +25,14 @@ class OGLview;
 
 namespace s21 {
 
-class OGLview : public QOpenGLWidget,
-                public QOpenGLFunctions {
+class OGLview : public QOpenGLWidget, public QOpenGLFunctions {
   Q_OBJECT
 
  public:
   explicit OGLview(QFont &font, QWidget *parent = nullptr);
   ~OGLview();
-    QImage *get_screen_pointer();
-    void set_recording(bool state);
+  QImage *get_screen_pointer();
+  void set_recording(bool state);
   void DrawModel();
   void ShowEventMessage(QString message, int delay);
   void set_key_spcace_state(bool state);
@@ -118,15 +117,15 @@ class OGLview : public QOpenGLWidget,
   const vector<unsigned int> *indices_;
   const vector<unsigned int> *ordered_indices_;
 
-    QMatrix4x4 m_projection_;
-    QMatrix4x4 m_view_;
-    QQuaternion rotation_;
-    QOpenGLShaderProgram program_;
-    QImage texture_;
-    bool is_textured_;
-    Object3D *object_;
-    QImage screen_;
-    bool is_recording_;
+  QMatrix4x4 m_projection_;
+  QMatrix4x4 m_view_;
+  QQuaternion rotation_;
+  QOpenGLShaderProgram program_;
+  QImage texture_;
+  bool is_textured_;
+  Object3D *object_;
+  QImage screen_;
+  bool is_recording_;
 
   void initializeGL() override;
   void resizeGL(int w, int h) override;
@@ -142,6 +141,6 @@ class OGLview : public QOpenGLWidget,
   bool isModelLoaded();
 };
 
-}  // namespace S21
+}  // namespace s21
 
 #endif  // OGLVIEW_H

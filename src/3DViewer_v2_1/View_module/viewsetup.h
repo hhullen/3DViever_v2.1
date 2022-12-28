@@ -6,8 +6,9 @@
 #include <QSettings>
 #include <QStyle>
 #include <QWidget>
-#include "panelfuncs.h"
+
 #include "enum_parameters.h"
+#include "panelfuncs.h"
 
 using s21::PanelFuncs;
 
@@ -63,6 +64,6 @@ class ViewSetup : public QWidget {
   void ConnectSignalSlot();
 };
 
-}  // namespace S21
+}  // namespace s21
 
 #endif  // VIEWSETUP_H

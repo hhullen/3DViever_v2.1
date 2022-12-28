@@ -4,9 +4,10 @@
 
 namespace s21 {
 
-MainWindow::MainWindow(QFont &font, ViewerController *controller, QWidget *parent)
+MainWindow::MainWindow(QFont &font, ViewerController *controller,
+                       QWidget *parent)
     : QMainWindow(parent), ui_(new Ui::MainWindow), controller_(controller) {
-    this->setFont(font);
+  this->setFont(font);
   ui_->setupUi(this);
   ogl_view_ = new OGLview(font);
   ui_->central_widget->layout()->addWidget(ogl_view_);
@@ -16,7 +17,8 @@ MainWindow::MainWindow(QFont &font, ViewerController *controller, QWidget *paren
   lighting_panel_ = new Lighting(font);
   texturing_panel_ = new Texturing(font);
   gif_recorder_ = new Recorder(ogl_view_->get_screen_pointer(), screen_cap_);
-  screencast_recorder_ =  new Recorder(ogl_view_->get_screen_pointer(), screen_cap_);
+  screencast_recorder_ =
+      new Recorder(ogl_view_->get_screen_pointer(), screen_cap_);
 
   view_panel_->setVisible(false);
   screen_cap_->setVisible(false);
@@ -37,38 +39,38 @@ MainWindow::MainWindow(QFont &font, ViewerController *controller, QWidget *paren
 }
 
 MainWindow::~MainWindow() {
-    while (gif_thread_.isRunning() || screencast_thread_.isRunning()) {
-        gif_thread_.terminate();
-        screencast_thread_.terminate();
-    }
-    delete ui_;
+  while (gif_thread_.isRunning() || screencast_thread_.isRunning()) {
+    gif_thread_.terminate();
+    screencast_thread_.terminate();
+  }
+  delete ui_;
 }
 
 void MainWindow::GetScreenShotSlot() {
-    ogl_view_->set_recording(true);
-    ogl_view_->update();
-    gif_recorder_->TakeScreenshot(ogl_view_->grabFramebuffer());
-    ogl_view_->set_recording(false);
+  ogl_view_->set_recording(true);
+  ogl_view_->update();
+  gif_recorder_->TakeScreenshot(ogl_view_->grabFramebuffer());
+  ogl_view_->set_recording(false);
 }
 
 void MainWindow::GetGifSlot() {
-    if (!gif_thread_.isRunning()) {
-        ogl_view_->set_recording(true);
-        ogl_view_->update();
-        gif_recorder_->moveToThread(&gif_thread_);
-        gif_thread_.start();
-    }
+  if (!gif_thread_.isRunning()) {
+    ogl_view_->set_recording(true);
+    ogl_view_->update();
+    gif_recorder_->moveToThread(&gif_thread_);
+    gif_thread_.start();
+  }
 }
 
 void MainWindow::GetScreenCastSlot() {
-    if (!screencast_thread_.isRunning()) {
-        ogl_view_->set_recording(true);
-        ogl_view_->update();
-        screencast_recorder_->moveToThread(&screencast_thread_);
-        SetSteerPanelComponentsAvailability(false);
-        screencast_thread_.start();
-        timer_.start(30);
-    }
+  if (!screencast_thread_.isRunning()) {
+    ogl_view_->set_recording(true);
+    ogl_view_->update();
+    screencast_recorder_->moveToThread(&screencast_thread_);
+    SetSteerPanelComponentsAvailability(false);
+    screencast_thread_.start();
+    timer_.start(30);
+  }
 }
 
 void MainWindow::UpdateViewSlot() {
@@ -87,7 +89,7 @@ void MainWindow::UpdateViewSlot() {
   if (state_ == ModelState::VertTexNorm || state_ == ModelState::VertNorm) {
     ogl_view_->set_shading_type(view_panel_->get_shading_type());
   } else {
-      ogl_view_->set_shading_type(ShadeMode::NOMAP);
+    ogl_view_->set_shading_type(ShadeMode::NOMAP);
   }
   ogl_view_->update();
 }
@@ -105,46 +107,46 @@ void MainWindow::UpdateTransformationPanelSlot() {
 }
 
 void MainWindow::UpdateLightingSlot() {
-    ogl_view_->set_light_color(lighting_panel_->get_color());
-    ogl_view_->set_light_position(lighting_panel_->get_position());
-    ogl_view_->set_light_power(lighting_panel_->get_power());
-    ogl_view_->update();
+  ogl_view_->set_light_color(lighting_panel_->get_color());
+  ogl_view_->set_light_position(lighting_panel_->get_position());
+  ogl_view_->set_light_power(lighting_panel_->get_power());
+  ogl_view_->update();
 }
 
 void MainWindow::UpdateTexturingSlot(bool textured) {
-    if (textured) {
-        ogl_view_->set_textured(texturing_panel_->get_texture());
-    } else {
-        ogl_view_->set_untextured();
-    }
+  if (textured) {
+    ogl_view_->set_textured(texturing_panel_->get_texture());
+  } else {
+    ogl_view_->set_untextured();
+  }
 }
 
 void MainWindow::SentMessage(QString message) {
-    ogl_view_->ShowEventMessage(message, 3000);
+  ogl_view_->ShowEventMessage(message, 3000);
 }
 
 void MainWindow::ModelRotationTick() {
-    if (screencast_thread_.isRunning()) {
-        QVector3D transform;
-        transform = transform_panel_->get_angle();
-        transform.setY(transform.y() + 2);
-        transform_panel_->set_angle(transform);
-        ogl_view_->set_angle(transform);
-    } else {
-        timer_.stop();
-        SetSteerPanelComponentsAvailability(true);
-        screencast_thread_.terminate();
-        ogl_view_->set_recording(false);
-    }
+  if (screencast_thread_.isRunning()) {
+    QVector3D transform;
+    transform = transform_panel_->get_angle();
+    transform.setY(transform.y() + 2);
+    transform_panel_->set_angle(transform);
+    ogl_view_->set_angle(transform);
+  } else {
+    timer_.stop();
+    SetSteerPanelComponentsAvailability(true);
+    screencast_thread_.terminate();
+    ogl_view_->set_recording(false);
+  }
 }
 
 void MainWindow::StopRecording() {
-    gif_thread_.terminate();
-    ogl_view_->set_recording(false);
+  gif_thread_.terminate();
+  ogl_view_->set_recording(false);
 }
 
 const std::vector<float> *MainWindow::GetUVMapDataSlot() {
-    return controller_->get_ordered_data_vector();
+  return controller_->get_ordered_data_vector();
 }
 
 void MainWindow::UpdateTransformationSlot() {
@@ -181,15 +183,15 @@ void MainWindow::ManageViewSetupPanelSlot(bool state) {
 }
 
 void MainWindow::ManageScreenCapturePanelSlot(bool state) {
-    screen_cap_->setVisible(state);
+  screen_cap_->setVisible(state);
 }
 
 void MainWindow::ManageLightingPanelSlot(bool state) {
-    lighting_panel_->setVisible(state);
+  lighting_panel_->setVisible(state);
 }
 
 void MainWindow::ManageTexturingPanelSlot(bool state) {
-    texturing_panel_->setVisible(state);
+  texturing_panel_->setVisible(state);
 }
 
 void MainWindow::SteerPanelClosedSlot(bool state) {
@@ -202,9 +204,9 @@ void MainWindow::ManageSteerPanelSlot(bool state) {
 }
 
 void MainWindow::CloseAppSlot(bool state) {
-    if (!state) {
-        QApplication::quit();
-    }
+  if (!state) {
+    QApplication::quit();
+  }
 }
 
 void MainWindow::OpenNewFileSlot() {
@@ -219,8 +221,10 @@ void MainWindow::OpenNewFileSlot() {
       SetModelInfo(state_);
       UpdateViewSlot();
       UpdateTransformationSlot();
-      ogl_view_->set_model_ordered_vertexes_vector(controller_->get_ordered_data_vector());
-      ogl_view_->set_model_ordered_indices_vector(controller_->get_ordered_indices_vector());
+      ogl_view_->set_model_ordered_vertexes_vector(
+          controller_->get_ordered_data_vector());
+      ogl_view_->set_model_ordered_indices_vector(
+          controller_->get_ordered_indices_vector());
       ogl_view_->set_model_vertexes_vector(controller_->get_vertexes_vector());
       ogl_view_->set_model_indices_vector(controller_->get_indices_vector());
       ogl_view_->ShowEventMessage("Successfully loaded", 2000);
@@ -251,17 +255,17 @@ void MainWindow::SetModelInfo(ModelState state) {
   status_bar_info.append("  Edges: ");
   status_bar_info.append(QString::number(controller_->get_facets_amount()));
   if (state == ModelState::Vert) {
-       status_bar_info.append("  [vertex only]");
-       texturing_panel_->setDisabled(true);
+    status_bar_info.append("  [vertex only]");
+    texturing_panel_->setDisabled(true);
   } else if (state == ModelState::VertNorm) {
-      status_bar_info.append("  [vertex/normal]");
-      texturing_panel_->setDisabled(true);
+    status_bar_info.append("  [vertex/normal]");
+    texturing_panel_->setDisabled(true);
   } else if (state == ModelState::VertTex) {
-      status_bar_info.append("  [vertex/texture]");
-      texturing_panel_->setDisabled(false);
+    status_bar_info.append("  [vertex/texture]");
+    texturing_panel_->setDisabled(false);
   } else if (state == ModelState::VertTexNorm) {
-      status_bar_info.append("  [vertex/texture/normal]");
-      texturing_panel_->setDisabled(false);
+    status_bar_info.append("  [vertex/texture/normal]");
+    texturing_panel_->setDisabled(false);
   }
   ui_->statusbar->showMessage(status_bar_info);
 }
@@ -300,8 +304,8 @@ void MainWindow::ConnectSignalSlot() {
           &MainWindow::UpdateTransformationSlot);
   connect(view_panel_, &ViewSetup::DataUpdatedSignal, this,
           &MainWindow::UpdateViewSlot);
-  connect(screen_cap_, &ScreenCap::TakeScreenshotSignal,
-          this, &MainWindow::GetScreenShotSlot);
+  connect(screen_cap_, &ScreenCap::TakeScreenshotSignal, this,
+          &MainWindow::GetScreenShotSlot);
   connect(screen_cap_, &ScreenCap::RecordGifSignal, this,
           &MainWindow::GetGifSlot);
   connect(screen_cap_, &ScreenCap::RecordScreencastSignal, this,
@@ -318,12 +322,17 @@ void MainWindow::ConnectSignalSlot() {
           &MainWindow::GetUVMapDataSlot);
 
   connect(&gif_thread_, &QThread::started, gif_recorder_, &Recorder::RecordGif);
-  connect(&screencast_thread_, &QThread::started, screencast_recorder_, &Recorder::RecordGif);
-  connect(gif_recorder_, &Recorder::FinishedSignal, this, &MainWindow::StopRecording);
-  connect(screencast_recorder_, &Recorder::FinishedSignal, &screencast_thread_, &QThread::terminate);
-  connect(gif_recorder_, &Recorder::SentMessage, ogl_view_, &OGLview::ShowEventMessage);
-  connect(screencast_recorder_, &Recorder::SentMessage, ogl_view_, &OGLview::ShowEventMessage);
+  connect(&screencast_thread_, &QThread::started, screencast_recorder_,
+          &Recorder::RecordGif);
+  connect(gif_recorder_, &Recorder::FinishedSignal, this,
+          &MainWindow::StopRecording);
+  connect(screencast_recorder_, &Recorder::FinishedSignal, &screencast_thread_,
+          &QThread::terminate);
+  connect(gif_recorder_, &Recorder::SentMessage, ogl_view_,
+          &OGLview::ShowEventMessage);
+  connect(screencast_recorder_, &Recorder::SentMessage, ogl_view_,
+          &OGLview::ShowEventMessage);
   connect(&timer_, &QTimer::timeout, this, &MainWindow::ModelRotationTick);
 }
 
-}  // namespace S21
+}  // namespace s21

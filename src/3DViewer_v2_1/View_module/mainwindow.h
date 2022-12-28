@@ -12,12 +12,12 @@
 #include "Model_module/model_obj_model.h"
 #include "View_module/oglview.h"
 #include "gifimage/qgifimage.h"
-#include "ptransform.h"
-#include "screencap.h"
-#include "viewsetup.h"
 #include "lighting.h"
-#include "texturing.h"
+#include "ptransform.h"
 #include "recorder.h"
+#include "screencap.h"
+#include "texturing.h"
+#include "viewsetup.h"
 
 using s21::OBJModel;
 using s21::ViewerController;
@@ -34,7 +34,8 @@ class MainWindow : public QMainWindow {
   Q_OBJECT
 
  public:
-  MainWindow(QFont &font, ViewerController *controller, QWidget *parent = nullptr);
+  MainWindow(QFont &font, ViewerController *controller,
+             QWidget *parent = nullptr);
   ~MainWindow();
   void SaveSettings();
   void UploadSettings();
@@ -90,6 +91,6 @@ class MainWindow : public QMainWindow {
   void StopRecording();
 };
 
-}  // namespace S21
+}  // namespace s21
 
 #endif  // MAINWINDOW_H

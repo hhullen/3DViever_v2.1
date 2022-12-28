@@ -68,6 +68,7 @@ class OBJModel {
     for (unsigned int i = 0; i < vertexes_values; i += 3) {
       Rotate_vector(model.v_, i, changeable_1, changeable_2, angle);
     }
+
     for (unsigned int i = 5; i < normals_values; i += 8) {
       Rotate_vector(model.subsequence_, i, changeable_1, changeable_2, angle);
     }
@@ -120,7 +121,7 @@ class OBJModel {
 
   static void Rotate_vector(vector<float> &vector, unsigned int i,
                             unsigned int changeable_1,
-                            unsigned int changeable_2, unsigned int angle) {
+                            unsigned int changeable_2, float angle) {
     float tmp_1 = vector.at(i + changeable_1);
     float tmp_2 = vector.at(i + changeable_2);
 

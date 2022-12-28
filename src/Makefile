@@ -1,4 +1,4 @@
-MAIN_PROJ_NAME=3DViewer_v2
+MAIN_PROJ_NAME=3DViewer_v2_1
 MODEL_TEST_NAMES=model
 MODEL_PATH=$(MAIN_PROJ_NAME)/Model_module
 CONTROLLER_PATH=$(MAIN_PROJ_NAME)/Controller_module
@@ -15,12 +15,6 @@ CHECK_FILES=$(MODEL_PATH)/*.cc $(MODEL_PATH)/*.h $(CONTROLLER_PATH)/*.cc $(CONTR
 CPPCH_SETUP=--enable=warning,performance,portability  -v --language=c++ -$(STD)
 VALGRIND_SETUP=--tool=memcheck --leak-check=full --show-leak-kinds=all
 BUILD_DIR=../build
-APP=$(MAIN_PROJ_NAME).app
-APP_PACKAGE=$(APP)/Contents/MacOS/$(MAIN_PROJ_NAME)
-BUILD_FILES_TO_DELETE=`ls | grep -v $(APP)`
-ICON_RESOURCES=$(MAIN_PROJ_NAME)/Resources
-PLIST=$(MAIN_PROJ_NAME)/Info.plist
-ICON_RESOURCES_TARGET=$(BUILD_DIR)/$(APP)/Contents/
 DOC_DIR=../documentation
 TO_DELETE=*.o *.out *.dSYM *.gch .DS_Store $(EXECUTABLE) $(CLANG_FILE) $(DOC_DIR)
 
@@ -28,15 +22,13 @@ all: clean dvi check uninstall install tests dist
 
 install:
 	mkdir -p $(BUILD_DIR)
-	cmake -S $(MAIN_PROJ_NAME) -B $(BUILD_DIR)
-	cd $(BUILD_DIR) && make && rm -rf $(BUILD_FILES_TO_DELETE)
-	chmod -R u+w $(BUILD_DIR)
-	cp -r $(ICON_RESOURCES) $(ICON_RESOURCES_TARGET)
-	cp -r $(PLIST) $(ICON_RESOURCES_TARGET)
+	cd $(BUILD_DIR) && \
+	qmake6 ../src/$(MAIN_PROJ_NAME)/$(MAIN_PROJ_NAME).pro && \
+	make
 	open $(BUILD_DIR)
 
 uninstall:
-	rm -rf $(BUILD_DIR)/$(APP)
+	rm -rf $(BUILD_DIR)
 
 dvi: get_html
 	open $(DOC_DIR)/index.html
@@ -45,7 +37,7 @@ get_html:
 	makeinfo --html -o $(DOC_DIR) dvi/info.texi
 
 dist:	
-	tar -cvf $(BUILD_DIR)/$(MAIN_PROJ_NAME).tar $(MAIN_PROJ_NAME)
+	tar -cvf ../$(MAIN_PROJ_NAME).tar $(MAIN_PROJ_NAME)
 
 check:
 	cppcheck $(CPPCH_SETUP) $(CHECK_FILES)
@@ -64,9 +56,6 @@ valgrind: clean
 leaks:
 	$(COMPILER) -g $(STD) $(TESTBUILD_FILES) -o $(EXECUTABLE) $(TEST_FLAGS)
 	CK_FORK=no leaks -atExit -- ./$(EXECUTABLE)
-
-run:
-	./$(BUILD_DIR)/$(APP_PACKAGE)
 
 clean:
 	rm -rf $(TO_DELETE)

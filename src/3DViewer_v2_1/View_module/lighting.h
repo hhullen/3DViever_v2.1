@@ -5,8 +5,9 @@
 #include <QLabel>
 #include <QSettings>
 #include <QStyle>
-#include <QWidget>
 #include <QVector3D>
+#include <QWidget>
+
 #include "panelfuncs.h"
 
 using s21::PanelFuncs;
@@ -17,35 +18,34 @@ class Lighting;
 
 namespace s21 {
 
-class Lighting : public QWidget
-{
-    Q_OBJECT
+class Lighting : public QWidget {
+  Q_OBJECT
 
-public:
-    explicit Lighting(QFont &font, QWidget *parent = nullptr);
-    ~Lighting();
-    void set_turned_on(bool state);
+ public:
+  explicit Lighting(QFont &font, QWidget *parent = nullptr);
+  ~Lighting();
+  void set_turned_on(bool state);
 
-    float get_power();
-    QVector3D get_position();
-    QColor get_color();
-    bool IsTurnedOn();
+  float get_power();
+  QVector3D get_position();
+  QColor get_color();
+  bool IsTurnedOn();
 
-signals:
+ signals:
   void DataUpdatedSignal();
 
-private:
-    Ui::Lighting *ui_;
-    QColor color_;
-    QSettings *settings_;
+ private:
+  Ui::Lighting *ui_;
+  QColor color_;
+  QSettings *settings_;
 
-    void SetDisabled(bool state);
-    void GetNewColor();
-    void SwitchState(int index);
-    void SaveSettings();
-    void UploadSettings();
+  void SetDisabled(bool state);
+  void GetNewColor();
+  void SwitchState(int index);
+  void SaveSettings();
+  void UploadSettings();
 };
 
-}
+}  // namespace s21
 
-#endif // LIGHTING_H
+#endif  // LIGHTING_H

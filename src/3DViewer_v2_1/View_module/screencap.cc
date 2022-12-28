@@ -6,7 +6,7 @@ namespace s21 {
 
 ScreenCap::ScreenCap(QFont &font, QWidget *parent)
     : QWidget(parent), ui_(new Ui::ScreenCap) {
-    this->setFont(font);
+  this->setFont(font);
   ui_->setupUi(this);
   ui_->label_panel_name->setFont(font);
   ui_->btn_folder_path->setFont(font);
@@ -94,4 +94,4 @@ void ScreenCap::ConnectSignalSlot() {
           &ScreenCap::RecordScreencastSignal);
 }
 
-}  // namespace S21
+}  // namespace s21

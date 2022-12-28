@@ -1,7 +1,7 @@
 \input texinfo
 @setfilename dockumentation.info
 
-@settitle 3D Viewer v2.0
+@settitle 3D Viewer v2.1
 
 @copying
 Copyright © 2022 hhullen21 Publishing
@@ -9,8 +9,8 @@ Copyright © 2022 hhullen21 Publishing
 
 
 @titlepage
-@title 3D Viewer v2.0
-@subtitle «CPP4_3DViewer_v2.0-0»
+@title 3D Viewer v2.1
+@subtitle «CPP4_3DViewer_v2.1-0»
 @author Hoshi Hullen
 
 @vskip 0pt plus 1filll
@@ -21,9 +21,9 @@ Copyright © 2022 hhullen21 Publishing
 
 @chapter Short app description
 
-The application is to draw 3d models in wireframe view (just points and lines). The only one model can be loaded at the one time. As well, it is possible to rotate, move, scale model by 3 axes (X, Y and Z), setup points ad lines colors, sizes and type (round/square for points and solid/stipple for lines), take a screenshot and GIF animation recording for 5 seconds.
+The application is to draw 3d models in wireframe, shaded, shadeframe view. The only one model can be loaded at the one time. As well, it is possible to rotate, move, scale model by 3 axes (X, Y and Z), setup points ad lines colors, sizes and type (round/square for points and solid/stipple for lines), take a screenshot and GIF animation recording for 5 seconds.
 
-The application developed in C++ language of C++17 standard using G++ compiler. As a GUI creation technology chosen QT6 library with C++ underneath. The application source code located in the src folder and can be built with Makefile which contains standard set of targets for GNU-programs: all, install, uninstall, clean, dvi, dist, tests, gcov_report.
+The application developed in C++ language. As a GUI creation technology chosen QT6 library with C++ underneath. The application source code located in the src folder and can be built with Makefile which contains standard set of targets for GNU-programs: all, install, uninstall, clean, dvi, dist, tests.
 
 @chapter Interface
 

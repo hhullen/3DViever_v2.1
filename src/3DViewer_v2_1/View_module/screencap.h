@@ -48,6 +48,6 @@ class ScreenCap : public QWidget {
   void ConnectSignalSlot();
 };
 
-}  // namespace S21
+}  // namespace s21
 
 #endif  // SCREENCAP_H

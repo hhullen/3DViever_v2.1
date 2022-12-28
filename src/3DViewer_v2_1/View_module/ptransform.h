@@ -2,8 +2,8 @@
 #define PTRANSFORM_H
 
 #include <QDoubleSpinBox>
-#include <QWidget>
 #include <QVector3D>
+#include <QWidget>
 
 namespace Ui {
 class PTransform;
@@ -35,6 +35,6 @@ class PTransform : public QWidget {
   void ConnectSignalSlot();
 };
 
-}  // namespace S21
+}  // namespace s21
 
 #endif  // PTRANSFORM_H
