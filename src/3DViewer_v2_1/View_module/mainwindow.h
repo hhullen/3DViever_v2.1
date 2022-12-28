@@ -34,7 +34,7 @@ class MainWindow : public QMainWindow {
   Q_OBJECT
 
  public:
-  MainWindow(ViewerController *controller, QWidget *parent = nullptr);
+  MainWindow(QFont &font, ViewerController *controller, QWidget *parent = nullptr);
   ~MainWindow();
   void SaveSettings();
   void UploadSettings();

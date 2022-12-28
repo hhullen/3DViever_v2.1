@@ -32,6 +32,7 @@ SOURCES += \
 HEADERS += \
     Model_module/model_obj_model.h \
     Controller_module/viewer_controller.h \
+    View_module/global_settings.h \
     View_module/panelfuncs.h \
     View_module/lighting.h \
     View_module/mainwindow.h \

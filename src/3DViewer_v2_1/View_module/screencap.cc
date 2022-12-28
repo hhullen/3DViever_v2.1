@@ -4,9 +4,14 @@
 
 namespace s21 {
 
-ScreenCap::ScreenCap(QWidget *parent)
+ScreenCap::ScreenCap(QFont &font, QWidget *parent)
     : QWidget(parent), ui_(new Ui::ScreenCap) {
+    this->setFont(font);
   ui_->setupUi(this);
+  ui_->label_panel_name->setFont(font);
+  ui_->btn_folder_path->setFont(font);
+  ui_->btn_open_folder->setFont(font);
+
   name_pattern_.setPattern("[^\\/]*$");
   settings_ = new QSettings("ScreenCapture", "FilePath", this);
   UploadSettings();

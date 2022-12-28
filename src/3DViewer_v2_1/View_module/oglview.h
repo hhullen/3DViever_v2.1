@@ -30,7 +30,7 @@ class OGLview : public QOpenGLWidget,
   Q_OBJECT
 
  public:
-  explicit OGLview(QWidget *parent = nullptr);
+  explicit OGLview(QFont &font, QWidget *parent = nullptr);
   ~OGLview();
     QImage *get_screen_pointer();
     void set_recording(bool state);

@@ -3,10 +3,17 @@
 
 namespace s21 {
 
-Texturing::Texturing(QWidget *parent) :
+Texturing::Texturing(QFont &font, QWidget *parent) :
     QWidget(parent),
     ui_(new Ui::Texturing), texture_path_(""), map_path_(""), data_(nullptr) {
+    this->setFont(font);
     ui_->setupUi(this);
+    ui_->label_panel_name->setFont(font);
+    ui_->btn_add_remove->setFont(font);
+    ui_->btn_folder_path->setFont(font);
+    ui_->btn_open->setFont(font);
+    ui_->btn_save->setFont(font);
+
     name_pattern_.setPattern("[^\\/]*$");
     ui_->btn_save->setDisabled(true);
     ui_->btn_open->setDisabled(true);

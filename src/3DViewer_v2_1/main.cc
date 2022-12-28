@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
+#include "View_module/global_settings.h"
 
 #include "View_module/mainwindow.h"
 using s21::MainWindow;
@@ -18,10 +19,10 @@ int main(int argc, char *argv[]) {
       break;
     }
   }
-
+  QFont main_font = s21::GlobalSettings().font;
   OBJModel model;
   ViewerController controller(&model);
-  MainWindow view(&controller);
+  MainWindow view(main_font, &controller);
   view.setWindowTitle("3D viewer v2.1");
   view.show();
 

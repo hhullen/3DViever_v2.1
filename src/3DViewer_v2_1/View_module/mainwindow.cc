@@ -4,16 +4,17 @@
 
 namespace s21 {
 
-MainWindow::MainWindow(ViewerController *controller, QWidget *parent)
+MainWindow::MainWindow(QFont &font, ViewerController *controller, QWidget *parent)
     : QMainWindow(parent), ui_(new Ui::MainWindow), controller_(controller) {
+    this->setFont(font);
   ui_->setupUi(this);
-  ogl_view_ = new OGLview();
+  ogl_view_ = new OGLview(font);
   ui_->central_widget->layout()->addWidget(ogl_view_);
-  transform_panel_ = new PTransform();
-  view_panel_ = new ViewSetup();
-  screen_cap_ = new ScreenCap();
-  lighting_panel_ = new Lighting();
-  texturing_panel_ = new Texturing();
+  transform_panel_ = new PTransform(font);
+  view_panel_ = new ViewSetup(font);
+  screen_cap_ = new ScreenCap(font);
+  lighting_panel_ = new Lighting(font);
+  texturing_panel_ = new Texturing(font);
   gif_recorder_ = new Recorder(ogl_view_->get_screen_pointer(), screen_cap_);
   screencast_recorder_ =  new Recorder(ogl_view_->get_screen_pointer(), screen_cap_);
 

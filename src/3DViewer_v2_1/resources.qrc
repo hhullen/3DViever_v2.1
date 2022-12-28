@@ -6,7 +6,7 @@
         <file>Resources/screenshot.png</file>
     </qresource>
     <qresource prefix="/font">
-        <file>Resources/microsoftsansserif.ttf</file>
+        <file>Resources/microsoftsansserif_hard.ttf</file>
     </qresource>
     <qresource prefix="/shaders">
         <file>View_module/fshader.frag</file>

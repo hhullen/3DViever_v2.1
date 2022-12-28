@@ -19,7 +19,7 @@ class ScreenCap : public QWidget {
   Q_OBJECT
 
  public:
-  explicit ScreenCap(QWidget *parent = nullptr);
+  explicit ScreenCap(QFont &font, QWidget *parent = nullptr);
   ~ScreenCap();
   QString get_media_path();
   ScreenshotFile get_screenshot_type();

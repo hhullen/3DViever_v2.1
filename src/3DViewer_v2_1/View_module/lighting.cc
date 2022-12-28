@@ -3,10 +3,13 @@
 
 namespace s21 {
 
-Lighting::Lighting(QWidget *parent) :
+Lighting::Lighting(QFont &font, QWidget *parent) :
     QWidget(parent),
     ui_(new Ui::Lighting) {
+    this->setFont(font);
     ui_->setupUi(this);
+    ui_->label_panel_name->setFont(font);
+
     set_turned_on(false);
     settings_ = new QSettings("LightSetup", "LightSettings", this);
 

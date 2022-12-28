@@ -15,7 +15,7 @@ class PTransform : public QWidget {
   Q_OBJECT
 
  public:
-  explicit PTransform(QWidget *parent = nullptr);
+  explicit PTransform(QFont &font, QWidget *parent = nullptr);
   ~PTransform();
   QVector3D get_position();
   QVector3D get_angle();

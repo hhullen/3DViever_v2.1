@@ -4,9 +4,12 @@
 
 namespace s21 {
 
-PTransform::PTransform(QWidget *parent)
+PTransform::PTransform(QFont &font, QWidget *parent)
     : QWidget(parent), ui_(new Ui::PTransform) {
+    this->setFont(font);
   ui_->setupUi(this);
+  ui_->label_panel_name->setFont(font);
+  ui_->btn_reset_position->setFont(font);
 
   ConnectSignalSlot();
 }

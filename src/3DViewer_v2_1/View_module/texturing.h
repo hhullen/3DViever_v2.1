@@ -30,7 +30,7 @@ class Texturing : public QWidget
     Q_OBJECT
 
 public:
-    explicit Texturing(QWidget *parent = nullptr);
+    explicit Texturing(QFont &font, QWidget *parent = nullptr);
     ~Texturing();
 
     QImage get_texture();

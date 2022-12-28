@@ -21,7 +21,7 @@ class ViewSetup : public QWidget {
   Q_OBJECT
 
  public:
-  explicit ViewSetup(QWidget *parent = nullptr);
+  explicit ViewSetup(QFont &font, QWidget *parent = nullptr);
   ~ViewSetup();
   ProjectionType get_projection_type();
   EdgeStyle get_edges_style();

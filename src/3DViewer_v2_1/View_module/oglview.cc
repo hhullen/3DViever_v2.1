@@ -4,8 +4,9 @@
 
 namespace s21 {
 
-OGLview::OGLview(QWidget *parent)
+OGLview::OGLview(QFont &font, QWidget *parent)
     : QOpenGLWidget(parent), ui_(new Ui::OGLview), object_(nullptr) {
+    this->setFont(font);
   ui_->setupUi(this);
   new_cursor_.setShape(Qt::OpenHandCursor);
   setCursor(new_cursor_);

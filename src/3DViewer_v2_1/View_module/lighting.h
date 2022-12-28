@@ -22,7 +22,7 @@ class Lighting : public QWidget
     Q_OBJECT
 
 public:
-    explicit Lighting(QWidget *parent = nullptr);
+    explicit Lighting(QFont &font, QWidget *parent = nullptr);
     ~Lighting();
     void set_turned_on(bool state);
 
@@ -44,7 +44,6 @@ private:
     void SwitchState(int index);
     void SaveSettings();
     void UploadSettings();
-
 };
 
 }

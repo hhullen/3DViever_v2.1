@@ -4,9 +4,13 @@
 
 namespace s21 {
 
-ViewSetup::ViewSetup(QWidget *parent)
+ViewSetup::ViewSetup(QFont &font, QWidget *parent)
     : QWidget(parent), ui_(new Ui::ViewSetup) {
+    this->setFont(font);
   ui_->setupUi(this);
+  ui_->view_setup_panel_name->setFont(font);
+  ui_->btn_reset->setFont(font);
+
   settings_ = new QSettings("ViewSetup", "ViewSettings", this);
   ui_->cb_shading_type->setDisabled(true);
   ConnectSignalSlot();
