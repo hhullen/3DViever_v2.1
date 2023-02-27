@@ -2,6 +2,8 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets openglwidgets gui
 
+QMAKE_CXXFLAGS=-finline-functions
+
 CONFIG += c++17 c11
 
 # You can make your code fail to compile if it uses deprecated APIs.
